@@ -1,4 +1,6 @@
 include *.md
 include LICENSE.txt
-include pyproject.toml
 recursive-include data *
+
+include versioneer.py
+include src/ptypes/_version.py
