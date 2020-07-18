@@ -1,11 +1,11 @@
-class TypeTIM(object):
+class PTypeTIM(PType):
 
     def __init__(self): pass
 
-class TypeFIL(object):
+class PTypeFIL(PType):
 
     def __init__(self): pass
 
-class TypeRAW(object):
+class PTypeRAW(PType):
 
     def __init__(self): pass

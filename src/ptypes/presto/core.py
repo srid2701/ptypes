@@ -1,27 +1,27 @@
-class TypeINF(object):
+class PTypeINF(PType):
 
     def __init__(self): pass
 
-class TypeDAT(object):
+class PTypeDAT(PType):
 
     def __init__(self): pass
 
-class TypePFD(object):
+class PTypePFD(PType):
 
     def __init__(self): pass
 
-class TypeBESTPROF(object):
+class PTypeBESTPROF(PType):
 
     def __init__(self): pass
 
-class TypePOLYCOS(object):
+class PTypePOLYCOS(PType):
 
     def __init__(self): pass
 
-class TypeFFT(object):
+class PTypeFFT(PType):
 
     def __init__(self): pass
 
-class TypeACCEL(object):
+class PTypeACCEL(PType):
 
     def __init__(self): pass
