@@ -1,0 +1,27 @@
+NBITStoDTYPE = {1: "<u1",
+                2: "<u1",
+                4: "<u1",
+                8: "<u1",
+                16: "<u2",
+                32: "<f4"}
+
+INFtoVARS = {
+    'Data file name without suffix': ['basename', str],
+    'Telescope used': ['telescopeID', str],
+    'Instrument used': ['machineID', str],
+    'Object being observed': ['srcname', str],
+    'J2000 Right Ascension (hh:mm:ss.ssss)': ['srcRA', str],
+    'J2000 Declination     (dd:mm:ss.ssss)': ['srcDEC', str],
+    'Epoch of observation (MJD)': ['mjd', float],
+    'Barycentered?           (1 yes, 0 no)': ['barycentric', int],
+    'Number of bins in the time series': ['nbins', int],
+    'Width of each time series bin (sec)': ['tsamp', float],
+    'Any breaks in the data? (1 yes, 0 no)': ['break', int],
+    'Type of observation (EM band)': ['obstype', str],
+    'Beam diameter (arcsec)': ['beamdiam', float],
+    'Dispersion measure (cm-3 pc)': ['dm', float],
+    'Central freq of low channel (MHz)': ['cfreq', float],
+    'Total bandwidth (MHz)': ['bw', float],
+    'Number of channels': ['nchan', int],
+    'Channel bandwidth (MHz)': ['chanbw', float],
+}

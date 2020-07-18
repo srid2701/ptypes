@@ -28,7 +28,9 @@ setup(
         'Topic :: Scientific/Engineering :: Astronomy'
     ],
 
-    keywords='pulsars, data types, readers',
+    keywords = ('pulsars, '
+                'data types, '
+                'readers'),
 
     package_dir={'': 'src'},
     packages=find_packages(where='src'),
@@ -41,7 +43,7 @@ setup(
         'Source': 'https://github.com/astrogewgaw/ptypes',
         'Bug Reports': 'https://github.com/astrogewgaw/ptypes/issues',
     },
-    
+
     cmd_class=versioneer.get_cmdclass(),
     zip_safe=False,
 )

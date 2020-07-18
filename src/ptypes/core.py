@@ -1,3 +1,5 @@
+import pprint
+
 class PType(object):
 
     def __init__(self,
@@ -7,8 +9,10 @@ class PType(object):
         self.nbits = nbits
         self.fname = fname
 
-    def read(self):
-        raise NotImplementedError
+    def __str__(self):
+        return '{}\n{}'.format(self.__class__,
+                               pprint.pformat(self.__dict__)
+                               )
 
-    def write(self):
-        raise NotImplementedError
+    def __repr__(self):
+        return str(self)
