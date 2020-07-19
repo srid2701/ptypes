@@ -499,6 +499,32 @@ class PTypePFD(PType):
                                                 np.float64,
                                                 self.proflen)
 
+            # NOTE: A `foldstats` struct is read in as a
+            # group of 7 doubles that correspond to, in
+            # order:
+            #   1. numdata
+            #   2. data_avg
+            #   3. data_var
+            #   4. numprof
+            #   5. prof_avg
+            #   6. prof_var
+            #   7. redchi
+
+            numstats = 7
+            dimensions = (self.npart,
+                          self.nsub,
+                          numstats)
+
+            self.stats = np.zeros(dimensions, dtype='d')
+
+            for pindx in pindxs:
+                cstats = self.stats[pindx]
+                for sindx in sindxs:
+
+                    cstats[sindx] = np.fromfile(infile,
+                                                np.float64,
+                                                numstats)
+
 
 class PTypeBESTPROF(PType):
 
