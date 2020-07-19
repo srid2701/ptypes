@@ -3,10 +3,8 @@ import pprint
 class PType(object):
 
     def __init__(self,
-                 fname,
-                 nbits):
-
-        self.nbits = nbits
+                 fname):
+        
         self.fname = fname
 
     def __str__(self):

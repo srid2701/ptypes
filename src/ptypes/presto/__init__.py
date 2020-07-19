@@ -1,1 +1,1 @@
-from .core import PTypeINF, PTypeDAT
+from .core import PTypeINF, PTypeDAT, PTypePFD
