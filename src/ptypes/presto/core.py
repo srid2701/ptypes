@@ -1,3 +1,4 @@
+import re
 import struct
 import numpy as np
 
@@ -35,24 +36,36 @@ class PTypeINF(PType):
         INFKEYS = INFtoVARS.keys()
         INFKEYS = list(INFKEYS)
 
+        regex = re.compile(r'''
+                           (?P<key>.+)
+                           =
+                           (?P<value>.+)
+                           ''', re.VERBOSE)
+
         with open(self.fname, 'r') as lines:
 
             for line in lines:
 
-                field = line.split('=')
-                key   = field[0].strip()
-                value = field[1].strip()
+                if re.search(regex, line):
 
-                if not key in INFKEYS:
-                    continue
-                else:
+                    matches = re.search(regex,
+                                        line)
 
-                    [key,
-                     ktype] = INFtoVARS[key]
+                    mdict = matches.groupdict()
 
-                    setattr(self,
-                            key,
-                            ktype(value))
+                    key   = mdict['key'].strip()
+                    value = mdict['value'].strip()
+
+                    if not key in INFKEYS:
+                        continue
+                    else:
+
+                        [key,
+                         ktype] = INFtoVARS[key]
+
+                        setattr(self,
+                                key,
+                                ktype(value))
 
 class PTypeDAT(PType):
 

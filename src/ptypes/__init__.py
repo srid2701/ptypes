@@ -1,5 +1,6 @@
 from .consts import *
-from .core   import PType
+
+from .core import PType
 
 from ._version import get_versions
 __version__ = get_versions()['version']
