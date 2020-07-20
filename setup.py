@@ -11,6 +11,7 @@ install_requires = ['numpy',
                     'astropy',
                     'matplotlib']
 
+
 setup(
     name='pulsartypes',
     version=versioneer.get_version(),
@@ -34,10 +35,10 @@ setup(
 
     package_dir={'': 'src'},
     packages=find_packages(where='src'),
+    install_package_data=True,
+
     python_requires='>=3.7, <4',
     install_requires=install_requires,
-
-    data_files=[('data', ['data/*'])],
 
     project_urls={
         'Source': 'https://github.com/astrogewgaw/ptypes',

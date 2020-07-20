@@ -1,6 +1,9 @@
+graft src
+
 include *.md
+
+include setup.cfg
 include LICENSE.txt
-recursive-include data *
 
 include versioneer.py
 include src/ptypes/_version.py
