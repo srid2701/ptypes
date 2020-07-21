@@ -1,2 +1,3 @@
-from .consts import (INFtoVARS,
-                     FORMATCHARS)
+from .core import (INFtoVARS,
+                   FORMATCHARS,
+                   BESTPROFtoVARS)

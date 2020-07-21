@@ -13,8 +13,9 @@ class PTypeINF(PType):
     Class to handle `INF` files, which store additional
     information about the time series data stored in a
     `DAT` file. These files are human-readable, but this
-    class is required to parse the variables from the file.
-    This class is be used by class `PTypeDAT`.
+    class is required to parse the variables.
+
+    This class is used with class `PTypeDAT`.
     """
 
     def __init__(self, fname):
@@ -36,17 +37,31 @@ class PTypeINF(PType):
         INFKEYS = INFtoVARS.keys()
         INFKEYS = list(INFKEYS)
 
+        # Regular expression to parse keys
+        # and values from an INF file.
+
         regex = re.compile(r'''
-                           (?P<key>.+)
-                           =
-                           (?P<value>.+)
+                           (?P<key>.+)      # The key.
+                           =                # The separator.
+                           (?P<value>.+)    # The value.
                            ''', re.VERBOSE)
 
         with open(self.fname, 'r') as lines:
 
+            # Initialise empty list to store
+            # the additional notes at the end
+            # of the file.
+
+            notes = []
+
             for line in lines:
 
                 if re.search(regex, line):
+
+                    # Get all keys and parameters.
+                    # The `=` sign is the separator
+                    # here. Use regular expressions
+                    # to parse the file.
 
                     matches = re.search(regex,
                                         line)
@@ -67,6 +82,27 @@ class PTypeINF(PType):
                                 key,
                                 ktype(value))
 
+                else:
+
+                    # Append additional notes.
+
+                    notes.append(line)
+
+            # Clip the heading from additional notes
+            # at the end of the INF file, and then
+            # store them in the `notes` attribute.
+
+            notes = notes[1:]
+            notes = [note.strip()
+                     for note in notes]
+            notes = [note
+                     for note in notes
+                     if note]
+
+            setattr(self,
+                    'notes',
+                    notes)
+
 class PTypeDAT(PType):
 
     """
@@ -76,6 +112,11 @@ class PTypeDAT(PType):
     additional information about the time series data. We
     parse this file with an object of the `PTypeINF` class.
     If the file is absent, an error will be raised.
+
+    This code is borrowed from the `readDat` function of
+    Ewan Barr's `sigprocpy`, with apologies. I have just
+    cleaned up the code and modified it to work with the
+    rest of the package.
     """
 
     def __init__(self,
@@ -108,7 +149,14 @@ class PTypeDAT(PType):
             Default: None.
         """
 
+        # Store the basename of the file.
+
         bsname = Path(self.fname).stem
+
+        # If a separate `INF` file is not specified,
+        # look for an `INF` file with the same name
+        # as the `DAT` file. Otherwise, an error will
+        # be raised.
 
         if inf is None:
             inf = Path(f'{bsname}.inf')
@@ -117,29 +165,128 @@ class PTypeDAT(PType):
             ERROR = 'No corresponding `.inf` file found.'
             raise OSError(ERROR)
 
+        # Read `INF` file into an instance of `PTypeINF`.
+
         header = PTypeINF(inf)
+
+        # Read data from `DAT` file.
 
         with open(self.fname, 'rb') as infile:
 
             self.data = np.fromfile(infile,
                                     dtype='float32')
 
+        # Storing some addtional parameters.
+
         header.inf      = str(inf)
         header.basename = str(bsname)
         header.filename = str(self.fname)
         header.nsamples = self.data.size
 
+        # Set all attributes from `INF` file.
+
         for key, value in header.__dict__.items():
             setattr(self, key, value)
 
+
+class PTypeFFT(PType):
+
+    """
+    Class to handle `FFT` files. These files store Fourier
+    series in a binary format. Every `FFT` file usually
+    has an `INF` file associated with it, which stores
+    additional information about the Fourier series data. We
+    parse this file with an object of the `PTypeINF` class.
+    If the file is absent, an error will be raised.
+
+    This code is borrowed from the `readFFT` function of
+    Ewan Barr's `sigprocpy`, with apologies. I have just
+    cleaned up the code and modified it to work with the
+    rest of the package.
+    """
+
+    def __init__(self,
+                 fname,
+                 inf=None):
+
+        """
+        Create an instance of `PTypeDAT`.
+        """
+
+        super().__init__(fname)
+
+        self.read(inf)
+
+    def read(self,
+             inf=None):
+
+        """
+        Read a `FFT` file into an instance of `PTypeFFT`.
+
+        Inputs:
+
+        inf: str
+
+            The name or path of the corresponding `INF`
+            file. If this is set to None, it is asssumed
+            that an `INF` file with the same name as the
+            `FFT` file exists in the current directory.
+
+            Default: None.
+        """
+
+        # Store the basename of the file.
+
+        bsname = Path(self.fname).stem
+
+        # If a separate `INF` file is not specified,
+        # look for an `INF` file with the same name
+        # as the `FFT` file. Otherwise, an error will
+        # be raised.
+
+        if inf is None:
+            inf = Path(f'{bsname}.inf')
+
+        if not inf.exists():
+            ERROR = 'No corresponding `.inf` file found.'
+            raise OSError(ERROR)
+
+        # Read INF file into an instance of `PTypeINF`.
+
+        header = PTypeINF(inf)
+
+        # Read data from `FFT` file.
+
+        with open(self.fname, 'rb') as infile:
+
+            self.data = np.fromfile(infile,
+                                    dtype='float32')
+
+        # Storing some addtional parameters.
+
+        header.inf      = str(inf)
+        header.basename = str(bsname)
+        header.filename = str(self.fname)
+
+        # Set all attributes from `INF` file.
+
+        for key, value in header.__dict__.items():
+            setattr(self, key, value)
+
+
 class PTypePFD(PType):
+
+    BPROFEXT   = '.bestprof'
+    POLYCOSEXT = '.polycos'
 
     """
     Class to handle `PFD` (Presto Folded Data) files.
     This stores three-dimensional folded data in a
-    binary format. The code is a cleaned-up version of
-    the code of the `pfd` class written by Scott Ransom
-    in the Python part of the newest release of PRESTO.
+    binary format.
+
+    This code is a cleaned-up version of the code of the
+    `pfd` class written by Scott Ransom in the Python part
+    of the newest release (v3.0.1) of `PRESTO`.
     """
 
     def __init__(self,
@@ -315,6 +462,19 @@ class PTypePFD(PType):
         # TODO: Take care of endianness!
 
         with open(self.fname, 'rb') as infile:
+
+            # Try to read the `BESTPROF` file.
+
+            try:
+
+                bprofname = ''.join([self.fname,
+                                     self.BPROFEXT])
+
+                self.bestprof = PTypeBESTPROF(bprofname)
+
+            except OSError:
+
+                self.bestprof = None
 
             # Start reading header parameters
             # from PFD file, and then store
@@ -539,18 +699,156 @@ class PTypePFD(PType):
                                                 numstats)
 
 
-class PTypeBESTPROF(PType):
-
-    def __init__(self): pass
-
-class PTypePOLYCOS(PType):
-
-    def __init__(self): pass
-
-class PTypeFFT(PType):
-
-    def __init__(self): pass
-
 class PTypeACCEL(PType):
 
     def __init__(self): pass
+
+
+class PTypeBESTPROF(PType):
+
+    """
+    Class to handle `BESTPROF` files, which store the
+    best profile of a particular candidate folded using
+    `PRESTO`. These files are human-readable, but this
+    class is required to parse the variables.
+
+    This class is used with class 'PTypePFD'.
+    """
+
+    def __init__(self, fname):
+
+        """
+        Create an instance of `PTypeBESTPROF`.
+        """
+
+        super().__init__(fname)
+
+        self.read()
+
+    def read(self):
+
+        """
+        Read an `BESTPROF` file into an instance
+        of `PTypeBESTPROF`.
+        """
+
+        BESTPROFKEYS = BESTPROFtoVARS.keys()
+        BESTPROFKEYS = list(BESTPROFKEYS)
+
+        with open(self.fname, 'r') as infile:
+
+            lines = infile.read()
+
+            # Regular expression to separate header
+            # and data in a `BESTPROF` file.
+
+            regex = re.compile(r'\#{2,}')
+
+            # Separate header and data.
+
+            [header,
+             data] = re.split(regex, lines)
+
+            # Split data along newline
+            # characters.
+
+            data = re.split(r'\n+',
+                            data)
+
+            for indx, line in enumerate(data):
+
+                number = line.strip()
+                point  = re.split(r'\s+',
+                                  number)[-1]
+                data[indx] = point
+
+            # Remove empties from data.
+
+            data = [number
+                    for number in data
+                    if number]
+
+            # Type convert data to a `numpy`
+            # array and store it in this class
+            # as an attribute.
+
+            data = np.asarray(data, dtype='float32')
+
+            setattr(self,
+                    'data',
+                    data)
+
+            # Regular expression to parse keys
+            # and values from a `BESTPROF` file.
+
+            regex = re.compile(r'''
+                               \#               # The comment char.
+                               \s+              # Whitespace.
+                               (?P<key>.+)      # The key.
+                               =                # The separator char.
+                               (?P<value>.+)    # The value.
+                               ''', re.VERBOSE)
+
+            for line in header:
+
+                if re.search(regex, line):
+
+                    # Get all keys and parameters.
+                    # The `=` sign is the separator
+                    # here. Use regular expressions
+                    # to parse the file.
+
+                    matches = re.search(regex,
+                                        line)
+
+                    mdict = matches.groupdict()
+
+                    key   = mdict['key'].strip()
+                    value = mdict['value'].strip()
+
+                    if not key in BESTPROFKEYS:
+                        continue
+                    else:
+
+                        [key,
+                         ktype] = BESTPROFtoVARS[key]
+
+                        # If value is N/A, exchange it
+                        # for `None`. Otherwise, try a
+                        # type conversion.
+
+                        if value != 'N/A':
+                            value = ktype(value)
+                        else:
+                            value = None
+
+                        # Check if the value returned
+                        # is in the form of a tuple.
+                        # if yes, separate the quantity
+                        # and it's error and store them
+                        # as separate attributes. If not,
+                        # just store the value as is.
+
+                        if isinstance(value, tuple):
+
+                            qty = value[0]
+                            err = value[1]
+
+                            qtykey = key
+                            errkey = ''.join([key,
+                                             'err'])
+
+
+                            setattr(self,
+                                    qtykey,
+                                    float(qty))
+
+                            setattr(self,
+                                    errkey,
+                                    float(err))
+
+                        else:
+
+                            setattr(self,
+                                    key,
+                                    value)
