@@ -18,6 +18,15 @@ FORMATCHARS = {
     'double': ('d', 8),
 }
 
+NBITStoDTYPE = {
+    1:"<u1",
+    2:"<u1",
+    4:"<u1",
+    8:"<u1",
+    16:"<u2",
+    32:"<f4",
+}
+
 def strOfBool(str):
     """
     Convert string to boolean.
