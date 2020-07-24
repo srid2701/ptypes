@@ -331,8 +331,8 @@ class PTypePFD(PType):
 
         values = []
 
-        ctype = FORMATCHARS[btype][0]
-        csize = FORMATCHARS[btype][1]
+        (ctype,
+         csize) = FORMATCHARS[btype]
 
         bufsize = csize * numval
 
@@ -371,8 +371,8 @@ class PTypePFD(PType):
             Default: 'int'
         """
 
-        ctype = FORMATCHARS[btype][0]
-        csize = FORMATCHARS[btype][1]
+        (ctype,
+         csize) = FORMATCHARS[btype]
 
         (strsize, ) = struct.unpack(ctype,
                                     fobj.read(csize))
@@ -410,8 +410,8 @@ class PTypePFD(PType):
             Default: 'double'
         """
 
-        ctype = FORMATCHARS[btype][0]
-        csize = FORMATCHARS[btype][1]
+        (ctype,
+         csize) = FORMATCHARS[btype]
 
         cstring = ctype * lenarr
 
@@ -563,8 +563,8 @@ class PTypePFD(PType):
 
             # Stop!
 
-            ctype = FORMATCHARS['float'][0]
-            csize = FORMATCHARS['float'][1]
+        (ctype,
+         csize) = FORMATCHARS['float'']
 
             bufsize = csize * 2
             buffer  = infile.read(bufsize)

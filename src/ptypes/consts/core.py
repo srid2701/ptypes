@@ -90,41 +90,137 @@ BESTPROFtoVARS = {
     'T_peri': ['tperi', float],
 }
 
-TELESCOPEtoID = {'GBT': '1',
-                 'Arecibo':' 3',
-                 'VLA': '6',
-                 'Parkes': '7',
-                 'Jodrell': '8',
-                 'GB43m': 'a',
-                 'GB 140FT': 'a',
-                 'Nancay': 'f',
-                 'Effelsberg': 'g',
-                 'WSRT': 'i',
-                 'FAST': 'k',
-                 'GMRT': 'r',
-                 'CHIME': 'y',
-                 'Geocenter': '0',
-                 'Barycenter': '@'}
+TELESCOPEtoID = {
 
-IDtoTELESCOPE = dict(
-                    zip(
-                        TELESCOPEtoID.values(),
-                        TELESCOPEtoID.keys()
-                        )
-                    )
+    'SIGPROC': {
+        'Fake': 0,
+        'Arecibo': 1,
+        'Ooty': 2,
+        'Nancay': 3,
+        'Parkes': 4,
+        'Jodrell': 5,
+        'GBT': 6,
+        'GMRT': 7,
+        'Effelsberg': 8,
+        'Effelsberg LOFAR':9,
+        'Unknown': 10,
+    },
 
-TELESCOPEtoMAXHA = {'GBT': 12,
-                    'Arecibo': 3,
-                    'FAST': 5,
-                    'VLA': 6,
-                    'Parkes': 12,
-                    'Jodrell': 12,
-                    'GB43m': 12,
-                    'GB 140FT': 12,
-                    'Nancay': 4,
-                    'Effelsberg': 12,
-                    'WSRT': 12,
-                    'GMRT': 12,
-                    'CHIME': 1,
-                    'Geocenter': 12,
-                    'Barycenter': 12}
+    'TEMPO': {
+        'GBT': '1',
+        'Arecibo':' 3',
+        'VLA': '6',
+        'Parkes': '7',
+        'Jodrell': '8',
+        'GB43m': 'a',
+        'GB 140FT': 'a',
+        'Nancay': 'f',
+        'Effelsberg': 'g',
+        'WSRT': 'i',
+        'FAST': 'k',
+        'GMRT': 'r',
+        'CHIME': 'y',
+        'Geocenter': '0',
+        'Barycenter': '@',
+    }
+}
+
+IDtoTELESCOPE = {}
+
+for key, value in TELESCOPEtoID.items():
+
+    IDtoTELESCOPE[key] = dict(
+                             zip(
+                                 value.values(),
+                                 value.keys()
+                                )
+                             )
+
+MACHINEtoID = {
+    "FAKE": 0,
+    "PSPM": 1,
+    "Wapp": 2,
+    "AOFTM": 3,
+    "BCPM1": 4,
+    "OOTY": 5,
+    "SCAMP": 6,
+    "GBT Pulsar Spigot": 7,
+    "PFFTS": 8,
+    "Unknown":9}
+
+IDtoMACHINE = dict(
+                  zip(
+                      MACHINEtoID.values(),
+                      MACHINEtoID.keys()
+                     )
+                  )
+
+DATATYPES = {
+    1: 'Filterbank file',
+    2: 'Timeseries file',
+}
+
+TELESCOPEtoMAXHA = {
+    'GBT': 12,
+    'Arecibo': 3,
+    'FAST': 5,
+    'VLA': 6,
+    'Parkes': 12,
+    'Jodrell': 12,
+    'GB43m': 12,
+    'GB 140FT': 12,
+    'Nancay': 4,
+    'Effelsberg': 12,
+    'WSRT': 12,
+    'GMRT': 12,
+    'CHIME': 1,
+    'Geocenter': 12,
+    'Barycenter': 12,
+}
+
+SIGPROCKEYS = {
+    'filename': 'str',
+    'telescope_id': 'int',
+    'telescope': 'str',
+    'machine_id': 'int',
+    'data_type': 'int',
+    'rawdatafile': 'str',
+    'source_name': 'str',
+    'barycentric': 'int',
+    'pulsarcentric': 'int',
+    'az_start': 'double',
+    'za_start': 'double',
+    'src_raj': 'double',
+    'src_dej': 'double',
+    'tstart': 'double',
+    'tsamp': 'double',
+    'nbits': 'int',
+    'nsamples': 'int',
+    'fch1': 'double',
+    'foff': 'double',
+    'fchannel': 'double',
+    'nchans': 'int',
+    'nifs': 'int',
+    'refdm': 'double',
+    'flux': 'double',
+    'period': 'double',
+    'nbeams': 'int',
+    'ibeam': 'int',
+    'hdrlen': 'int',
+    'pb':'double',
+    'ecc':'double',
+    'asini':'double',
+    'orig_hdrlen': 'int',
+    'new_hdrlen': 'int',
+    'sampsize': 'int',
+    'bandwidth': 'double',
+    'fbottom': 'double',
+    'ftop': 'double',
+    'obs_date': 'str',
+    'obs_time': 'str',
+    'signed': 'signed_char',
+    'accel': 'double',
+}
+
+STARTFLAG = 'HEADER_START'
+ENDFLAG   = 'HEADER_END'

@@ -1,3 +1,12 @@
-from .core import (INFtoVARS,
+from .core import (ENDFLAG,
+                   STARTFLAG,
+                   DATATYPES,
+                   INFtoVARS,
+                   SIGPROCKEYS,
                    FORMATCHARS,
-                   BESTPROFtoVARS)
+                   MACHINEtoID,
+                   IDtoMACHINE,
+                   TELESCOPEtoID,
+                   IDtoTELESCOPE,
+                   BESTPROFtoVARS,
+                   TELESCOPEtoMAXHA)
