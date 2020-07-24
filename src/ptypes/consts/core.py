@@ -19,12 +19,12 @@ FORMATCHARS = {
 }
 
 NBITStoDTYPE = {
-    1:"<u1",
-    2:"<u1",
-    4:"<u1",
-    8:"<u1",
-    16:"<u2",
-    32:"<f4",
+    1: '<u1',
+    2: '<u1',
+    4: '<u1',
+    8: '<u1',
+    16: '<u2',
+    32: '<f4',
 }
 
 def strOfBool(str):
@@ -104,6 +104,7 @@ TELESCOPEtoID = {
     'SIGPROC': {
         'Fake': 0,
         'Arecibo': 1,
+        'ARECIBO 305m': 1,
         'Ooty': 2,
         'Nancay': 3,
         'Parkes': 4,
@@ -111,8 +112,14 @@ TELESCOPEtoID = {
         'GBT': 6,
         'GMRT': 7,
         'Effelsberg': 8,
-        'Effelsberg LOFAR':9,
-        'Unknown': 10,
+        'ATA': 9,
+        'SRT': 10,
+        'LOFAR': 11,
+        'VLA': 12,
+        'CHIME': 20,
+        'FAST': 21,
+        'MeerKAT': 64,
+        'KAT-7': 65,
     },
 
     'TEMPO': {
@@ -146,16 +153,22 @@ for key, value in TELESCOPEtoID.items():
                              )
 
 MACHINEtoID = {
-    "FAKE": 0,
-    "PSPM": 1,
-    "Wapp": 2,
-    "AOFTM": 3,
-    "BCPM1": 4,
-    "OOTY": 5,
-    "SCAMP": 6,
-    "GBT Pulsar Spigot": 7,
-    "PFFTS": 8,
-    "Unknown":9}
+    'FAKE': 0,
+    'PSPM': 1,
+    'Wapp': 2,
+    'WAPP': 2,
+    'AOFTM': 3,
+    'BCPM1': 4,
+    'BPP': 4,
+    'OOTY': 5,
+    'SCAMP': 6,
+    'GBT Pulsar Spigot': 7,
+    'SPIGOT': 7,
+    'BG/P': 11,
+    'PDEV': 12,
+    'CHIME+PSR': 20,
+    'KAT': 64,
+    'KAT-DC2': 65,}
 
 IDtoMACHINE = dict(
                   zip(
