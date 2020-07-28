@@ -161,6 +161,8 @@ class PTypeDAT(PType):
 
         if inf is None:
             inf = Path(f'{bsname}.inf')
+        else:
+            inf = Path(inf)
 
         if not inf.exists():
             ERROR = 'No corresponding `.inf` file found.'
@@ -180,8 +182,8 @@ class PTypeDAT(PType):
         # Storing some addtional parameters.
 
         header.inf      = str(inf)
-        header.basename = str(bsname)
-        header.filename = str(self.fname)
+        header.bsname   = str(bsname)
+        header.fname    = str(self.fname)
         header.nsamples = self.data.size
 
         # Set all attributes from `INF` file.
