@@ -563,8 +563,8 @@ class PTypePFD(PType):
 
             # Stop!
 
-        (ctype,
-         csize) = FORMATCHARS['float'']
+            (ctype,
+             csize) = FORMATCHARS['float']
 
             bufsize = csize * 2
             buffer  = infile.read(bufsize)
