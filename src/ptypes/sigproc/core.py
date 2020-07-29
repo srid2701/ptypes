@@ -294,6 +294,14 @@ class PTypeTIM(PType):
             setattr(self, key, value)
 
 
+class PTypeSPEC(PType):
+
+    def __init__(self,
+                 fname):
+
+        pass
+
+
 class PTypeFIL(PType):
 
     """
