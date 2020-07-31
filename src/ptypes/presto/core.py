@@ -350,6 +350,20 @@ class PTypePFD(PType):
 
         return values
 
+    def _writeValues_(self,
+                      fobj,
+                      values,
+                      btype='int'):
+
+        (ctype,
+         csize) = FORMATCHARS[btype]
+
+        cstring = ctype * len(values)
+
+        bytes = struct.pack(cstring, *values)
+
+        fobj.write(bytes)
+
     def _readString_(self,
                      fobj,
                      btype='int'):
@@ -384,6 +398,21 @@ class PTypePFD(PType):
         string = string.decode('utf-8')
 
         return string
+
+    def _writeString_(self,
+                      fobj,
+                      string,
+                      btype='int'):
+
+        (ctype,
+         csize) = FORMATCHARS[btype]
+
+        strsize = len(string)
+        binsize = struct.pack(ctype, strsize)
+        string  = string.encode('utf-8')
+
+        fobj.write(binsize)
+        fobj.write(string)
 
     def _readArray_(self,
                     fobj,
@@ -425,9 +454,25 @@ class PTypePFD(PType):
 
         return array
 
-    def _storeAttrs_(self,
-                     keys,
-                     values):
+    def _writeArray_(self,
+                     fobj,
+                     array,
+                     btype='double'):
+
+        """
+        """
+
+        (ctype,
+         csize) = FORMATCHARS[btype]
+
+        cstring = ctype * len(array)
+        bytes   = struct.pack(cstring, *array)
+
+        fobj.write(bytes)
+
+    def _setAttrs_(self,
+                   keys,
+                   values):
 
         """
         Private function that stores a series of attributes
@@ -447,6 +492,20 @@ class PTypePFD(PType):
 
         for key, value in zip(keys, values):
             setattr(self, key, value)
+
+    def _getAttrs_(self,
+                   keys):
+
+        """
+        """
+
+        values = []
+
+        for key in keys:
+            value = getattr(self, key)
+            values.append(value)
+
+        return values
 
     def read(self):
 
@@ -496,7 +555,7 @@ class PTypePFD(PType):
                     'npfact']
 
             values = self._readValues_(infile, len(keys))
-            self._storeAttrs_(keys, values)
+            self._setAttrs_(keys, values)
 
             # Stop! Have to process strings differently.
             # Reading:
@@ -528,6 +587,8 @@ class PTypePFD(PType):
             # absent from the file, or simply `Unknown`.
 
             test = infile.read(16)
+
+            print(test)
 
             if not test[:8]==b"Unknown" and b':' in test:
                 self.rastr = test[:test.find(b'\0')]
@@ -561,7 +622,7 @@ class PTypePFD(PType):
                                        len(keys),
                                        btype='double')
 
-            self._storeAttrs_(keys, values)
+            self._setAttrs_(keys, values)
 
             # Stop!
 
@@ -571,8 +632,9 @@ class PTypePFD(PType):
             bufsize = csize * 2
             buffer  = infile.read(bufsize)
 
-            (self.topopow, tmp) = struct.unpack(ctype * 2,
-                                                buffer)
+            (self.topopow,
+             self._ttmp_) = struct.unpack(ctype * 2,
+                                          buffer)
 
             keys = ['topop1',
                     'topop2',
@@ -582,14 +644,15 @@ class PTypePFD(PType):
                                        len(keys),
                                        btype='double')
 
-            self._storeAttrs_(keys, values)
+            self._setAttrs_(keys, values)
 
             # Stop!
 
             buffer  = infile.read(bufsize)
 
-            (self.barypow, tmp) = struct.unpack(ctype * 2,
-                                                buffer)
+            (self.barypow,
+             self._btmp_) = struct.unpack(ctype * 2,
+                                          buffer)
 
             keys = ['baryp1',
                     'baryp2',
@@ -599,14 +662,15 @@ class PTypePFD(PType):
                                        len(keys),
                                        btype='double')
 
-            self._storeAttrs_(keys, values)
+            self._setAttrs_(keys, values)
 
             # Stop!
 
             buffer  = infile.read(bufsize)
 
-            (self.foldpow, tmp) = struct.unpack(ctype * 2,
-                                                buffer)
+            (self.foldpow,
+             self._ftmp_) = struct.unpack(ctype * 2,
+                                          buffer)
 
             keys = ['foldp1',
                     'foldp2',
@@ -616,7 +680,7 @@ class PTypePFD(PType):
                                        len(keys),
                                        btype='double')
 
-            self._storeAttrs_(keys, values)
+            self._setAttrs_(keys, values)
 
             # Can start reading attributes the usual way.
 
@@ -632,7 +696,7 @@ class PTypePFD(PType):
                                        len(keys),
                                        btype='double')
 
-            self._storeAttrs_(keys, values)
+            self._setAttrs_(keys, values)
 
             # Stop! Need to process arrays now.
             # Reading:
@@ -699,6 +763,240 @@ class PTypePFD(PType):
                     cstats[sindx] = np.fromfile(infile,
                                                 np.float64,
                                                 numstats)
+
+    def write(self,
+              fname):
+
+        """
+        Write an instance of `PTypePFD` into a `PFD` file.
+        """
+
+        # WARNING: No attention has been made to the
+        # endianness of the data. Native endianness is
+        # assumed. If you are unfortunate enough that
+        # you have data from a computer with different
+        # endianness from your own, this class can't
+        # help you. Yet.
+
+        # TODO: Take care of endianness!
+
+        with open(fname, 'wb+') as infile:
+
+            # Start writing header parameters
+            # to the PFD file, by retrieving
+            # attributes from the `PTypePFD`
+            # instance.
+
+            keys = ['numdms',
+                    'numperiods',
+                    'numpdots',
+                    'nsub',
+                    'npart',
+                    'proflen',
+                    'numchan',
+                    'pstep',
+                    'pdstep',
+                    'dmstep',
+                    'ndmfact',
+                    'npfact']
+
+            values = self._getAttrs_(keys)
+            self._writeValues_(infile, values)
+
+            # Stop! Have to process strings differently.
+            # Writing:
+            #   1. The name of the original file which
+            #      was folded.
+            #   2. The name of the pulsar candidate.
+            #   3. The name of the telescope used for the
+            #      the observation.
+            #   4. The name of the PostScript file that will
+            #      eventually be plotted by `prepfold`.
+            #
+            # Need to encode the string too.
+
+            keys = ['filename',
+                    'candname',
+                    'telescope',
+                    'pgdev']
+
+            for key in keys:
+                string = getattr(self, key)
+                self._writeString_(infile, string)
+
+            # Stop! Have to process RA and DEC of the
+            # observation differently. If we could not
+            # read the coordinates, skip this section
+            # entirely. Otherwise, write the coordinates
+            # to file.
+
+            try:
+
+                pad = b'\x00\x00\x00'
+
+                if not ((self.rastr == "Unknown")
+                        and
+                        (self.decstr == "Unknown")):
+
+                    rabin = self.rastr.encode('utf-8')
+                    rabin = b''.join([rabin, pad])
+
+                    decbin = self.decstr.encode('utf-8')
+                    decbin = b''.join([decbin, pad])
+
+                else:
+
+                    rabin  = b'Unknown'
+                    decbin = b'Unknown'
+
+                infile.write(rabin)
+                infile.write(decbin)
+
+            except AttributeError:
+                pass
+
+            # Can start writing attributes the usual
+            # way. NOTE: Most attributes from now on
+            # are `doubles` rather than `ints`.
+
+            keys = ['tsamp',
+                    'startT',
+                    'endT',
+                    'tepoch',
+                    'bepoch',
+                    'avgoverc',
+                    'lofreq',
+                    'chanwidth',
+                    'bestdm']
+
+            values = self._getAttrs_(keys)
+
+            self._writeValues_(infile,
+                               values,
+                               btype='double')
+
+            # Stop!
+
+            (ctype,
+             csize) = FORMATCHARS['float']
+
+            topopow = struct.pack(ctype * 2,
+                                  self.topopow,
+                                  self._ttmp_)
+
+            infile.write(topopow)
+
+            keys = ['topop1',
+                    'topop2',
+                    'topop3']
+
+            values = self._getAttrs_(keys)
+
+            self._writeValues_(infile,
+                               values,
+                               btype='double')
+
+            # Stop!
+
+            barypow = struct.pack(ctype * 2,
+                                  self.barypow,
+                                  self._btmp_)
+
+            infile.write(barypow)
+
+            keys = ['baryp1',
+                    'baryp2',
+                    'baryp3']
+
+            values = self._getAttrs_(keys)
+
+            self._writeValues_(infile,
+                               values,
+                               btype='double')
+
+            # Stop!
+
+            foldpow = struct.pack(ctype * 2,
+                                  self.foldpow,
+                                  self._ftmp_)
+
+            infile.write(foldpow)
+
+            keys = ['foldp1',
+                    'foldp2',
+                    'foldp3']
+
+            values = self._getAttrs_(keys)
+
+            self._writeValues_(infile,
+                               values,
+                               btype='double')
+
+            # Can start reading attributes the usual way.
+
+            keys = ['orbp',
+                    'orde',
+                    'ordx',
+                    'ordw',
+                    'orbt',
+                    'ordpd',
+                    'ordwd']
+
+            values = self._getAttrs_(keys)
+
+            self._writeValues_(infile,
+                               values,
+                               btype='double')
+
+            # Stop! Need to process arrays now.
+            # Reading:
+            #   1. The DM axis,
+            #   2. The PERIODS axis,
+            #   3. The PDOTS axis,
+            #
+            # NOTE: These arrays are `doubles`.
+
+            arrays = ['dms',
+                      'periods',
+                      'pdots']
+
+            for name in arrays:
+                array = getattr(self, name)
+                self._writeArray_(infile, array)
+
+            # Stop! Need to read the folded profiles.
+            # Folded profiles are 3-dimensional data
+            # and have to be read accordingly.
+
+            pindxs = range(self.npart)
+            sindxs = range(self.nsub)
+
+            for pindx in pindxs:
+                for sindx in sindxs:
+
+                    profile = self.profs[pindx,
+                                         sindx,
+                                         :].tobytes()
+
+                    infile.write(profile)
+
+            # NOTE: A `foldstats` struct is written out
+            # as a group of 7 doubles that correspond to,
+            # in order:
+            #   1. numdata
+            #   2. data_avg
+            #   3. data_var
+            #   4. numprof
+            #   5. prof_avg
+            #   6. prof_var
+            #   7. redchi
+
+            for pindx in pindxs:
+                cstats = self.stats[pindx]
+                for sindx in sindxs:
+
+                    statarr = cstats[sindx].tobytes()
+                    infile.write(statarr)
 
 
 class PTypeACCEL(PType):
