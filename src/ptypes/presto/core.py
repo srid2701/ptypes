@@ -282,6 +282,9 @@ class PTypePFD(PType):
     BPROFEXT   = '.bestprof'
     POLYCOSEXT = '.polycos'
 
+    RALEN  = 16
+    DECLEN = 16
+
     """
     Class to handle `PFD` (Presto Folded Data) files.
     This stores three-dimensional folded data in a
@@ -359,10 +362,9 @@ class PTypePFD(PType):
          csize) = FORMATCHARS[btype]
 
         cstring = ctype * len(values)
+        packets = struct.pack(cstring, *values)
 
-        bytes = struct.pack(cstring, *values)
-
-        fobj.write(bytes)
+        fobj.write(packets)
 
     def _readString_(self,
                      fobj,
@@ -466,9 +468,9 @@ class PTypePFD(PType):
          csize) = FORMATCHARS[btype]
 
         cstring = ctype * len(array)
-        bytes   = struct.pack(cstring, *array)
+        packets = struct.pack(cstring, *array)
 
-        fobj.write(bytes)
+        fobj.write(packets)
 
     def _setAttrs_(self,
                    keys,
@@ -559,6 +561,7 @@ class PTypePFD(PType):
 
             # Stop! Have to process strings differently.
             # Reading:
+            #
             #   1. The name of the original file which
             #      was folded.
             #   2. The name of the pulsar candidate.
@@ -580,21 +583,22 @@ class PTypePFD(PType):
 
             # Stop! Have to process RA and DEC of the
             # observation differently. Have to read
-            # the first 16 bytes of the file and test
-            # if the coordinates are in a proper format
-            # for reading or not, and if there are any
-            # coordinates at all. Coordinates might be
-            # absent from the file, or simply `Unknown`.
+            # the first `RALEN` bytes of the file and
+            # test if the coordinates are in a proper
+            # format for reading or not, and if there
+            # are any coordinates at all. Coordinates
+            # might be absent from the file, or simply
+            # `Unknown`.
 
-            test = infile.read(16)
-
-            print(test)
+            test = infile.read(RALEN)
 
             if not test[:8]==b"Unknown" and b':' in test:
+
                 self.rastr = test[:test.find(b'\0')]
                 self.rastr = self.rastr.decode('utf-8')
 
-                test = infile.read(16)
+                test = infile.read(DECLEN)
+
                 self.decstr = test[:test.find(b'\0')]
                 self.decstr = self.decstr.decode('utf-8')
             else:
@@ -602,7 +606,7 @@ class PTypePFD(PType):
                 self.decstr = "Unknown"
 
                 if ':' not in test:
-                    infile.seek(-16, 1)
+                    infile.seek(-RALEN, 1)
 
             # Can start reading attributes the usual
             # way. NOTE: Most attributes from now on
@@ -771,15 +775,6 @@ class PTypePFD(PType):
         Write an instance of `PTypePFD` into a `PFD` file.
         """
 
-        # WARNING: No attention has been made to the
-        # endianness of the data. Native endianness is
-        # assumed. If you are unfortunate enough that
-        # you have data from a computer with different
-        # endianness from your own, this class can't
-        # help you. Yet.
-
-        # TODO: Take care of endianness!
-
         with open(fname, 'wb+') as infile:
 
             # Start writing header parameters
@@ -805,6 +800,7 @@ class PTypePFD(PType):
 
             # Stop! Have to process strings differently.
             # Writing:
+            #
             #   1. The name of the original file which
             #      was folded.
             #   2. The name of the pulsar candidate.
@@ -832,25 +828,29 @@ class PTypePFD(PType):
 
             try:
 
-                pad = b'\x00\x00\x00'
+                pad = b'\x00'
 
                 if not ((self.rastr == "Unknown")
                         and
                         (self.decstr == "Unknown")):
 
-                    rabin = self.rastr.encode('utf-8')
-                    rabin = b''.join([rabin, pad])
+                    rabinary = self.rastr.encode('utf-8')
+                    numpad   = (RALEN - len(rabinary))
+                    padding  = pad * numpad
+                    rabinary = b''.join([rabinary, padding])
 
-                    decbin = self.decstr.encode('utf-8')
-                    decbin = b''.join([decbin, pad])
+                    decbinary = self.decstr.encode('utf-8')
+                    numpad    = (DECLEN - len(decbinary))
+                    padding   = pad * numpad
+                    decbinary  = b''.join([decbinary, padding])
 
                 else:
 
-                    rabin  = b'Unknown'
-                    decbin = b'Unknown'
+                    rabinary  = b'Unknown'
+                    decbinary = b'Unknown'
 
-                infile.write(rabin)
-                infile.write(decbin)
+                infile.write(rabinary)
+                infile.write(decbinary)
 
             except AttributeError:
                 pass
@@ -932,7 +932,7 @@ class PTypePFD(PType):
                                values,
                                btype='double')
 
-            # Can start reading attributes the usual way.
+            # Can start writing attributes the usual way.
 
             keys = ['orbp',
                     'orde',
@@ -949,7 +949,7 @@ class PTypePFD(PType):
                                btype='double')
 
             # Stop! Need to process arrays now.
-            # Reading:
+            # Writing:
             #   1. The DM axis,
             #   2. The PERIODS axis,
             #   3. The PDOTS axis,
