@@ -286,13 +286,13 @@ class PTypePFD(PType):
     DECLEN = 16
 
     """
-    Class to handle `PFD` (Presto Folded Data) files.
+    Class to handle `PFD` (PRESTO Folded Data) files.
     This stores three-dimensional folded data in a
     binary format.
 
     This code is a cleaned-up version of the code of the
-    `pfd` class written by Scott Ransom in the Python part
-    of the newest release (v3.0.1) of `PRESTO`.
+    `pfd` class written by Scott Ransom in the Python code
+    packaged in the newest release (v3.0.1) of `PRESTO`.
     """
 
     def __init__(self,
