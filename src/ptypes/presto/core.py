@@ -358,6 +358,9 @@ class PTypePFD(PType):
                       values,
                       btype='int'):
 
+        """
+        """
+
         (ctype,
          csize) = FORMATCHARS[btype]
 
@@ -405,6 +408,9 @@ class PTypePFD(PType):
                       fobj,
                       string,
                       btype='int'):
+
+        """
+        """
 
         (ctype,
          csize) = FORMATCHARS[btype]
@@ -777,11 +783,6 @@ class PTypePFD(PType):
 
         with open(fname, 'wb+') as infile:
 
-            # Start writing header parameters
-            # to the PFD file, by retrieving
-            # attributes from the `PTypePFD`
-            # instance.
-
             keys = ['numdms',
                     'numperiods',
                     'numpdots',
@@ -798,19 +799,6 @@ class PTypePFD(PType):
             values = self._getAttrs_(keys)
             self._writeValues_(infile, values)
 
-            # Stop! Have to process strings differently.
-            # Writing:
-            #
-            #   1. The name of the original file which
-            #      was folded.
-            #   2. The name of the pulsar candidate.
-            #   3. The name of the telescope used for the
-            #      the observation.
-            #   4. The name of the PostScript file that will
-            #      eventually be plotted by `prepfold`.
-            #
-            # Need to encode the string too.
-
             keys = ['filename',
                     'candname',
                     'telescope',
@@ -819,12 +807,6 @@ class PTypePFD(PType):
             for key in keys:
                 string = getattr(self, key)
                 self._writeString_(infile, string)
-
-            # Stop! Have to process RA and DEC of the
-            # observation differently. If we could not
-            # read the coordinates, skip this section
-            # entirely. Otherwise, write the coordinates
-            # to file.
 
             try:
 
@@ -855,10 +837,6 @@ class PTypePFD(PType):
             except AttributeError:
                 pass
 
-            # Can start writing attributes the usual
-            # way. NOTE: Most attributes from now on
-            # are `doubles` rather than `ints`.
-
             keys = ['tsamp',
                     'startT',
                     'endT',
@@ -874,8 +852,6 @@ class PTypePFD(PType):
             self._writeValues_(infile,
                                values,
                                btype='double')
-
-            # Stop!
 
             (ctype,
              csize) = FORMATCHARS['float']
@@ -896,8 +872,6 @@ class PTypePFD(PType):
                                values,
                                btype='double')
 
-            # Stop!
-
             barypow = struct.pack(ctype * 2,
                                   self.barypow,
                                   self._btmp_)
@@ -913,8 +887,6 @@ class PTypePFD(PType):
             self._writeValues_(infile,
                                values,
                                btype='double')
-
-            # Stop!
 
             foldpow = struct.pack(ctype * 2,
                                   self.foldpow,
@@ -932,8 +904,6 @@ class PTypePFD(PType):
                                values,
                                btype='double')
 
-            # Can start writing attributes the usual way.
-
             keys = ['orbp',
                     'orde',
                     'ordx',
@@ -948,14 +918,6 @@ class PTypePFD(PType):
                                values,
                                btype='double')
 
-            # Stop! Need to process arrays now.
-            # Writing:
-            #   1. The DM axis,
-            #   2. The PERIODS axis,
-            #   3. The PDOTS axis,
-            #
-            # NOTE: These arrays are `doubles`.
-
             arrays = ['dms',
                       'periods',
                       'pdots']
@@ -963,10 +925,6 @@ class PTypePFD(PType):
             for name in arrays:
                 array = getattr(self, name)
                 self._writeArray_(infile, array)
-
-            # Stop! Need to read the folded profiles.
-            # Folded profiles are 3-dimensional data
-            # and have to be read accordingly.
 
             pindxs = range(self.npart)
             sindxs = range(self.nsub)
@@ -979,17 +937,6 @@ class PTypePFD(PType):
                                          :].tobytes()
 
                     infile.write(profile)
-
-            # NOTE: A `foldstats` struct is written out
-            # as a group of 7 doubles that correspond to,
-            # in order:
-            #   1. numdata
-            #   2. data_avg
-            #   3. data_var
-            #   4. numprof
-            #   5. prof_avg
-            #   6. prof_var
-            #   7. redchi
 
             for pindx in pindxs:
                 cstats = self.stats[pindx]

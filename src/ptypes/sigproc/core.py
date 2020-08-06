@@ -7,9 +7,9 @@ from pathlib import Path
 from ptypes import PType
 from ptypes.consts import *
 
-class PTypeHEADER(PType):
+DEFAULT = 'Unknown'
 
-    DEFAULT = 'Unknown'
+class PTypeHEADER(PType):
 
     """
     Class to handle the reading of `SIGPROC` style
