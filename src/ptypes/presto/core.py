@@ -596,14 +596,14 @@ class PTypePFD(PType):
             # might be absent from the file, or simply
             # `Unknown`.
 
-            test = infile.read(RALEN)
+            test = infile.read(self.RALEN)
 
             if not test[:8]==b"Unknown" and b':' in test:
 
                 self.rastr = test[:test.find(b'\0')]
                 self.rastr = self.rastr.decode('utf-8')
 
-                test = infile.read(DECLEN)
+                test = infile.read(self.DECLEN)
 
                 self.decstr = test[:test.find(b'\0')]
                 self.decstr = self.decstr.decode('utf-8')
@@ -612,7 +612,7 @@ class PTypePFD(PType):
                 self.decstr = "Unknown"
 
                 if ':' not in test:
-                    infile.seek(-RALEN, 1)
+                    infile.seek(-self.RALEN, 1)
 
             # Can start reading attributes the usual
             # way. NOTE: Most attributes from now on
@@ -817,12 +817,12 @@ class PTypePFD(PType):
                         (self.decstr == "Unknown")):
 
                     rabinary = self.rastr.encode('utf-8')
-                    numpad   = (RALEN - len(rabinary))
+                    numpad   = (self.RALEN - len(rabinary))
                     padding  = pad * numpad
                     rabinary = b''.join([rabinary, padding])
 
                     decbinary = self.decstr.encode('utf-8')
-                    numpad    = (DECLEN - len(decbinary))
+                    numpad    = (self.DECLEN - len(decbinary))
                     padding   = pad * numpad
                     decbinary  = b''.join([decbinary, padding])
 
