@@ -11,13 +11,14 @@ from ptypes.presto import (PTypeINF,
                            PTypeACCEL,
                            PTypeBESTPROF)
 
-TESTDIR   = Path(__file__).parent.resolve()
+TESTDIR = Path(__file__).parent.resolve()
+DATADIR = Path.joinpath(TESTDIR, 'data')
 
-INFTEST   = Path.joinpath(TESTDIR, 'example.inf')
-DATTEST   = Path.joinpath(TESTDIR, 'example.dat')
-FFTTEST   = Path.joinpath(TESTDIR, 'example.fft')
-PFDTEST   = Path.joinpath(TESTDIR, 'example.pfd')
-BPROFTEST = Path.joinpath(TESTDIR, 'example.pfd.bestprof')
+INFTEST   = Path.joinpath(DATADIR, 'test.inf')
+DATTEST   = Path.joinpath(DATADIR, 'test.dat')
+FFTTEST   = Path.joinpath(DATADIR, 'test.fft')
+PFDTEST   = Path.joinpath(DATADIR, 'test.pfd')
+BPROFTEST = Path.joinpath(DATADIR, 'test.pfd.bestprof')
 
 INFVALS = [
     'fake_noise.4096ch.8bit.J2144-3933_DC1-de-dispersed_DM3.35',
@@ -91,7 +92,7 @@ def test_dat():
     # object.
 
     assert dat.inf        == str(INFTEST)
-    assert dat.bsname     == 'example'
+    assert dat.bsname     == 'test'
     assert dat.fname      == str(DATTEST)
     assert dat.nsamples   == int(3600000)
     assert dat.data.size  == int(3600000)
