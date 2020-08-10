@@ -1,15 +1,1 @@
-from .core import (ENDFLAG,
-                   STARTFLAG,
-                   DATATYPES,
-                   INFtoVARS,
-                   SIGPROCKEYS,
-                   PSRFITSKEYS,
-                   PSRFITSTEMP,
-                   FORMATCHARS,
-                   MACHINEtoID,
-                   IDtoMACHINE,
-                   NBITStoDTYPE,
-                   TELESCOPEtoID,
-                   IDtoTELESCOPE,
-                   BESTPROFtoVARS,
-                   TELESCOPEtoMAXHA)
+from .core import *
