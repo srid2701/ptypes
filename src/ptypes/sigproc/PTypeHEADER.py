@@ -2,8 +2,8 @@ import struct
 
 from pathlib import Path
 
+from ptypes import PType
 from ptypes.consts.sigproc import *
-from ptypes.core.basis import PType
 
 
 DEFAULT = 'Unknown'

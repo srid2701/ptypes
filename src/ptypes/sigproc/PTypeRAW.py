@@ -3,9 +3,8 @@ import numpy as np
 
 from pathlib import Path
 
+from ptypes import PType
 from ptypes.consts.sigproc import *
-from ptypes.core.basis import PType
-from ptypes.core.spectra import Spectra
 
 class PTypeRAW(PType):
 

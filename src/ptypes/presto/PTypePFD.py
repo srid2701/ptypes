@@ -3,10 +3,10 @@ import numpy as np
 
 from pathlib import Path
 
+from ptypes import PType
 from ptypes.consts.misc   import *
 from ptypes.consts.presto import *
 from ptypes.consts.phymath import *
-from ptypes.core.basis import PType
 
 from .PTypeINF import PTypeINF
 from .PTypeBESTPROF import PTypeBESTPROF

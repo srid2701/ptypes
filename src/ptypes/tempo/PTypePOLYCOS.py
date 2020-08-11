@@ -4,8 +4,8 @@ import numpy as np
 from pathlib import Path
 from itertools import zip_longest
 
+from ptypes import PType
 from ptypes.consts.tempo import *
-from ptypes.core.basis import PType
 
 
 DOT    = '.'

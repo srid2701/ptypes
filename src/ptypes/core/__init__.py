@@ -1,2 +1,1 @@
-from .basis   import PType
-from .spectra import Spectra
+from .ptype import PType

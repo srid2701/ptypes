@@ -8,9 +8,7 @@ here = pathlib.Path(__file__).parent.resolve()
 long_description = (here / 'README.md').read_text(encoding='utf-8')
 
 install_requires = ['numpy',
-                    'astropy',
-                    'matplotlib']
-
+                    'astropy']
 
 setup(
     name='pulsartypes',

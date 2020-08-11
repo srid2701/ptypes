@@ -8,12 +8,14 @@ import astropy.coordinates as coord
 from pathlib import Path
 from astropy.io import fits
 
+from ptypes import PType
 from ptypes.consts.psrfits import *
-from ptypes.core.basis import PType
-from ptypes.core.spectra import Spectra
 
 
 def unpack2bit(data):
+
+    """
+    """
 
     pieces = [np.bitwise_and(data >> 0x06, 0x03),
               np.bitwise_and(data >> 0x04, 0x03),
@@ -26,6 +28,9 @@ def unpack2bit(data):
 
 def unpack4bit(data):
 
+    """
+    """
+
     pieces = [np.bitwise_and(0x04, 0x0F),
               np.bitwise_and(0x0F)]
 
@@ -36,10 +41,14 @@ def unpack4bit(data):
 
 class PTypePSRFITS(PType):
 
-    BYTESIZE = 8
+    """
+    """
 
     def __init__(self,
                  fname):
+
+        """
+        """
 
         super().__init__(fname)
 
@@ -54,11 +63,30 @@ class PTypePSRFITS(PType):
                      zerooff=True,
                      collapse=True):
 
+        """
+        """
+
         pass
 
-    def _readInfo_(self): pass
+    def _readInfo_(self,
+                   fobj):
+
+        """
+        """
+
+        if not self._isPSRFITS_(fobj):
+            ERRMSG = ('File {:s} does not appear to'
+                      'be in the PSRFITS format, so'
+                      ' cannot read it.')
+            raise ValueError(ERRMSG)
+
+        PRIMHDR = fobj['PRIMARY'].header
+        SINTHDR = fobj['SUBINT'].header
 
     def read(self):
+
+        """
+        """
 
         with fits.open(self.fname) as infile:
 

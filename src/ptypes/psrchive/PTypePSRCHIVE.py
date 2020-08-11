@@ -4,8 +4,8 @@ import astropy.coordinates as coord
 
 from pathlib import Path
 
+from ptypes import PType
 from ptypes.consts.psrchive import *
-from ptypes.core.basis import PType
 
 
 class PTypePSRCHIVE(PType):
