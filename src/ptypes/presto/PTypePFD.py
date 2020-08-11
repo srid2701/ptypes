@@ -3,8 +3,10 @@ import numpy as np
 
 from pathlib import Path
 
-from ptypes import PType
-from ptypes.consts import *
+from ptypes.consts.misc   import *
+from ptypes.consts.presto import *
+from ptypes.consts.phymath import *
+from ptypes.core.basis import PType
 
 from .PTypeINF import PTypeINF
 from .PTypeBESTPROF import PTypeBESTPROF
@@ -731,11 +733,8 @@ class PTypePFD(PType):
 
                 try:
 
-                    PSRNAME  = self.candname.replace(PSRSUFFIX, '')
                     POLYFILE = self.fname.with_suffix(POLYCOSEXT)
-                    self.polycos = (PTypePOLYCOS
-                                    .getTEMPO(PSRNAME,
-                                              fname=POLYFILE))
+                    self.polycos = (PTypePOLYCOS(fname=POLYFILE))
 
                     midMJD = self.tepoch + (0.5
                                             * self.numsamp

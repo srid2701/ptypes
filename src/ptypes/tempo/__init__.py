@@ -1,2 +1,1 @@
-from .core import (PTypePOLYCO,
-                   PTypePOLYCOS)
+from .PTypePOLYCOS import PTypePOLYCOS

@@ -1,1 +1,1 @@
-from .core import PTypePSRFITS
+from .PTypePSRFITS import PTypePSRFITS

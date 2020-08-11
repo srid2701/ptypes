@@ -1,1 +1,1 @@
-from .core import PTypePSRCHIVE
+from .PTypePSRCHIVE import PTypePSRCHIVE
