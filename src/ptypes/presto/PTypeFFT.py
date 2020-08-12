@@ -28,7 +28,7 @@ class PTypeFFT(PType):
                  inf=None):
 
         """
-        Create an instance of `PTypeDAT`.
+        Create an instance of `PTypeFFT`.
         """
 
         super().__init__(fname)
@@ -64,12 +64,14 @@ class PTypeFFT(PType):
 
         if inf is None:
             inf = Path(f'{bsname}.inf')
+        else:
+            inf = Path(inf)
 
         if not inf.exists():
             ERROR = 'No corresponding `.inf` file found.'
             raise OSError(ERROR)
 
-        # Read INF file into an instance of `PTypeINF`.
+        # Read `INF` file into an instance of `PTypeINF`.
 
         header = PTypeINF(inf)
 
@@ -83,8 +85,9 @@ class PTypeFFT(PType):
         # Storing some addtional parameters.
 
         header.inf      = str(inf)
-        header.basename = str(bsname)
-        header.filename = str(self.fname)
+        header.bsname   = str(bsname)
+        header.fname    = str(self.fname)
+        header.nsamples = self.data.size
 
         # Set all attributes from `INF` file.
 

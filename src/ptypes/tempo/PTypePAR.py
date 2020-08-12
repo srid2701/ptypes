@@ -17,7 +17,8 @@ class PTypePAR(PType):
         super().__init__(fname)
 
         self.read()
-        self.process()
+        self.clean()
+        self.procs()
 
     def read(self):
 
@@ -74,12 +75,13 @@ class PTypePAR(PType):
 
                         setattr(self, err, values[-1])
 
-    def process(self):
+    def clean(self):
 
         """
-        Process all values read into a `PTypePAR` instance.
-        This does all the relevant type conversions for all
-        variables we just stored through the `read` function.
+        Clean all data we just read in through the
+        `read` function, by doing all appropriate
+        type conversions. Except for a few values,
+        most are either ints or floats.
         """
 
         # These keys are not to be disturbed
@@ -131,3 +133,15 @@ class PTypePAR(PType):
                 setattr(self,
                         key,
                         value)
+
+    def procs(self):
+
+        """
+        Process some of the values we just read in
+        and cleaned. We mostly have to:
+
+        1. Process the coordinates appropriately.
+        2. Calculate and store missing variables.
+        """
+
+        pass

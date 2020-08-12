@@ -3,6 +3,7 @@ import struct
 from pathlib import Path
 
 from ptypes import PType
+from ptypes.consts.misc    import *
 from ptypes.consts.sigproc import *
 
 
@@ -228,7 +229,7 @@ class PTypeHEADER(PType):
             self.hdrsize = infile.tell()
 
             IDMACH = IDtoMACHINE
-            IDTELE = IDtoTELESCOPE['SIGPROC']
+            IDTELE = IDtoTELESCOPE
             DTYPES = DATATYPES
 
             self.telescope = IDTELE.get(self.telescope_id, DEFAULT)
