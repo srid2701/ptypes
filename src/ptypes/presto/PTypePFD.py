@@ -369,7 +369,7 @@ class PTypePFD(PType):
 
             try:
 
-                bprofname = ''.join([self.fname,
+                bprofname = ''.join([str(self.fname),
                                      self.BPROFEXT])
 
                 self.bestprof = PTypeBESTPROF(bprofname)
@@ -663,10 +663,10 @@ class PTypePFD(PType):
             #   6. prof_var
             #   7. redchi
 
-            numstats = 7
+            self.numstats = 7
             dimensions = (self.npart,
                           self.nsub,
-                          numstats)
+                          self.numstats)
 
             self.stats = np.zeros(dimensions, dtype='d')
 
@@ -676,7 +676,7 @@ class PTypePFD(PType):
 
                     cstats[sindx] = np.fromfile(infile,
                                                 np.float64,
-                                                numstats)
+                                                self.numstats)
 
                 # Append `numdata` from `foldstats`
                 # to the points per fold. This is
@@ -692,10 +692,6 @@ class PTypePFD(PType):
                            .accumulate([0,
                                         *self.pointsPERFOLD[:-1]]))
                           * self.tsamp)
-
-        print(self.tsamp)
-        print(self.startSECS.shape)
-        print(self.pointsPERFOLD.shape)
 
         self.midSECS = self.startSECS + (0.5
                                          * self.tsamp

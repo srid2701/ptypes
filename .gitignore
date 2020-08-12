@@ -3,7 +3,5 @@ __pycache__/
 
 /dist/
 /build/
-/*.egg-info
-/*.egg
 /src/*.egg-info
 /src/*.egg

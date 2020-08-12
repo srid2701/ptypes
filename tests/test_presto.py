@@ -3,7 +3,7 @@ import numpy as np
 
 from pathlib import Path
 
-from ptypes.consts import *
+from ptypes.consts.presto import *
 from ptypes.presto import (PTypeINF,
                            PTypeDAT,
                            PTypeFFT,
@@ -100,6 +100,68 @@ def test_dat():
 
 def test_fft(): pass
 
-def test_pfd(): pass
+def test_pfd():
 
-def test_bprof(): pass    
+    pfd = PTypePFD(PFDTEST)
+
+    assert pfd.fname == PFDTEST
+
+    assert pfd.filename == ('fake_noise'
+                            '.4096ch'
+                            '.8bit'
+                            '.J2144-3933_DC1'
+                            '.fil')
+
+    assert pfd.pgdev == ('fake_noise'
+                         '.4096ch'
+                         '.8bit'
+                         '.J2144-3933_'
+                         'DC1_'
+                         'PSR_'
+                         '2144-3933'
+                         '.pfd'
+                         '.ps/'
+                         'CPS')
+
+    assert pfd.candname  == 'PSR_2144-3933'
+    assert pfd.telescope == 'GMRT'
+
+    assert pfd.lofreq     == 300.024926
+    assert pfd.hifreq     == 499.97558599999996
+    assert pfd.bestdm     == 2.884502764847447
+    assert pfd.ndmfact    == 1
+    assert pfd.npart      == 60
+    assert pfd.npfact     == 1
+    assert pfd.numchan    == 4096
+    assert pfd.numdms     == 129
+    assert pfd.nsub       == 128
+    assert pfd.numpdots   == 129
+    assert pfd.numperiods == 129
+    assert pfd.numsamp    == 589.8240000000001
+    assert pfd.proflen    == 64
+    assert pfd.pstep      == 1
+    assert pfd.chanwidth  == 0.048828
+    assert pfd.tepoch     == 58017.59968182648
+    assert pfd.topop1     == 8.509797317517647
+    assert pfd.foldp1     == 0.11751161193245732
+    assert pfd.rastr      == '21:44:00.0000'
+    assert pfd.decstr     == '-39:33:00.0000'
+
+    assert len(pfd.dms)     == pfd.numdms
+    assert len(pfd.pdots)   == pfd.numpdots
+    assert len(pfd.periods) == pfd.numperiods
+
+    assert pfd.profs.shape == (pfd.npart,
+                               pfd.nsub,
+                               pfd.proflen)
+
+    assert pfd.stats.shape == (pfd.npart,
+                               pfd.nsub,
+                               pfd.numstats)
+
+    assert pfd.subLFREQ == 301.538594
+    assert pfd.subDFREQ == 1.562496
+    assert pfd.subCHANS == 32
+    assert pfd.secBINS  == 7.520743163677269
+
+def test_bprof(): pass
