@@ -1,18 +1,20 @@
 .DEFAULT_GOAL := help
 PKG = pulsartypes
+PKG_DIR = src
+TESTS_DIR = tests
 
 dist: ## Build source distribution
 	python setup.py sdist bdist_wheel
 
-# NOTE: -e installs in "Development Mode"
+# NOTE: -e installs in "Development Mode".
 # See: https://packaging.python.org/tutorials/installing-packages/
 install: ## Install the package in development mode
 	pip install -e .
 
-# NOTE: remove the .egg-info directory
+# NOTE: remove the .egg-info directory from src/.
 uninstall: ## Uninstall the package
 	pip uninstall ${PKG}
-	rm -rf src/${PKG}.egg-info
+	rm -rf ${PKG_DIR}/${PKG}.egg-info
 
 # GLORIOUS hack to autogenerate Makefile help
 # This simply parses the double hashtags that follow each Makefile command
@@ -31,8 +33,14 @@ clean: ## Remove all python cache and build files
 	rm -rf tmp/
 	rm -rf .pytest_cache/
 	rm -f .coverage
+	
+upload_test: ## Upload the distribution source to the TEST PyPI
+	twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+
+upload: ## Upload the distribution source to the REAL PyPI
+	twine upload dist/*
 
 tests: ## Run the unit tests and print a coverage report
-	pytest --cov --verbose --cov-report term-missing tests/
+	pytest --cov --verbose --cov-report term-missing ${TESTS_DIR}
 
 .PHONY: dist install uninstall help clean upload upload_test tests
