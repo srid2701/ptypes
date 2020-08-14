@@ -92,6 +92,7 @@ class PTypePAR(PType):
                    'PSRJ',
                    'NAME',
                    'SURVEY',
+                   'OSURVEY',
                    'UNITS']
 
         # Iterate through all attributes.
