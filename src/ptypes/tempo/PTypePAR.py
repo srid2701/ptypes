@@ -1,11 +1,11 @@
 from ptypes import PType
 
+ERRKW = '_ERR'
+
 class PTypePAR(PType):
 
     """
     """
-
-    ERRKW = '_ERR'
 
     def __init__(self,
                  fname):
@@ -71,7 +71,7 @@ class PTypePAR(PType):
                         # at the end.
 
                         err = ''.join([key,
-                                       self.ERRKW])
+                                       ERRKW])
 
                         setattr(self, err, values[-1])
 

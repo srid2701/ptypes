@@ -9,6 +9,7 @@ from ptypes.consts.sigproc import *
 
 from .PTypeHEADER import PTypeHEADER
 
+
 ALLOWED = [8,
            16,
            32]
@@ -125,8 +126,6 @@ class PTypeFIL(PType):
             STOP  = int(np.round(STOP/TSAMP))
 
             NSPECs = (STOP - START)
-
-            print(NSPECs)
 
             SPECTRA = self.freqslice(START, NSPECs)
 

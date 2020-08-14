@@ -528,12 +528,12 @@ class PTypePFD(PType):
             # Can start reading attributes the usual way.
 
             keys = ['orbp',
-                    'orde',
-                    'ordx',
-                    'ordw',
+                    'orbe',
+                    'orbx',
+                    'orbw',
                     'orbt',
-                    'ordpd',
-                    'ordwd']
+                    'orbpd',
+                    'orbwd']
 
             values = self._readValues_(infile,
                                        len(keys),
@@ -885,12 +885,12 @@ class PTypePFD(PType):
                                btype='double')
 
             keys = ['orbp',
-                    'orde',
-                    'ordx',
-                    'ordw',
+                    'orbe',
+                    'orbx',
+                    'orbw',
                     'orbt',
-                    'ordpd',
-                    'ordwd']
+                    'orbpd',
+                    'orbwd']
 
             values = self._getAttrs_(keys)
 

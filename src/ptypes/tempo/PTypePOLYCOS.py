@@ -45,8 +45,34 @@ def padder(matrix):
 class POLYCO(object):
 
     """
-    This will be used to read a single block of data
-    in a `POLYCOS` file, in the `PTypePOLYCOS` class.
+    This will be used to read a single block of data in a
+    `POLYCOS` file, in the `PTypePOLYCOS` class. Polynomial
+    ephemerides for a pulsar are stored in a sequence. This
+    class represents just a single block from such a sequence.
+    Each block has the following format:
+
+    Line  Columns     Item
+    ----  -------   -----------------------------------
+      1      1-10   Pulsar Name
+            11-19   Date (dd-mmm-yy)
+            20-31   UTC (hhmmss.ss)
+            32-51   TMID (MJD)
+            52-72   DM
+            74-79   Doppler shift due to earth motion (10^-4)
+            80-86   Log_10 of fit rms residual in periods
+      2      1-20   Reference Phase (RPHASE)
+            21-38   Reference rotation frequency (F0)
+            39-43   Observatory number (see note ** below)
+            44-49   Data span (minutes)
+            50-54   Number of coefficients
+            55-75   Observing frequency (MHz)
+            76-80   Binary phase
+      3*     1-25   Coefficient 1 (COEFF(1))
+            26-50   Coefficient 2 (COEFF(2))
+            51-75   Coefficient 3 (COEFF(3))
+
+    *  Subsequent lines have three coefficients each, up to NCOEFF
+    ** Observatory numbers are integers based on the observatory code.
     """
 
     def __init__(self,
@@ -62,6 +88,7 @@ class POLYCO(object):
              fobj):
 
         """
+        Read a a single block of data into a `POLYCO` instance.
         """
 
         fline  = fobj.readline()
@@ -103,15 +130,15 @@ class POLYCO(object):
             line   = fobj.readline()
             params = line.split()
 
-            self.rphase   = float(params[0])
-            self.pfreq    = float(params[1])
+            self.refPhase = float(params[0])
+            self.refFreq  = float(params[1])
             self.obsv     = str(params[2])
-            self.dataspan = int(params[3])
-            self.numcoeff = int(params[4])
-            self.obsfreq  = float(params[5])
+            self.dataSpan = int(params[3])
+            self.numCoeff = int(params[4])
+            self.obsFreq  = float(params[5])
 
             try:
-                self.binphase = float(params[6])
+                self.binPhase = float(params[6])
             except IndexError:
                 pass
 
@@ -149,7 +176,28 @@ class POLYCO(object):
 class PTypePOLYCOS(PType):
 
     """
+    Class to handle 'POLYCOS' files, which store the
+    polynomial ephemerides for a pulsar. This data is
+    usually written by `TEMPO`, one of the most widely
+    used programs for pulsar timing, to a file named
+    `polycos.dat`. These polynomials are used to get
+    predictions for the frequency and phase of the
+    pulsar via the formulas:
 
+    DT = (T-TMID) * 1440
+
+    PHASE = (RPHASE
+             + DT*60*F0
+             + COEFF(1)
+             + DT*COEFF(2)
+             + DT^2*COEFF(3)
+             + ....)
+
+    FREQ(Hz) = (F0
+                + (1/60)*(COEFF(2)
+                + 2*DT*COEFF(3)
+                + 3*DT^2*COEFF(4)
+                + ....)
     """
 
     def __init__(self,
@@ -166,6 +214,7 @@ class PTypePOLYCOS(PType):
     def read(self):
 
         """
+        Read a `POLYCOS` file into an instance of `PTypePOLYCOS`.
         """
 
         with open(self.fname, 'r') as infile:
@@ -181,12 +230,12 @@ class PTypePOLYCOS(PType):
 
                 if len(self.polycos):
 
-                    if TPOLY.dataspan != self.dataspan:
+                    if TPOLY.dataspan != self.dataSpan:
                         WARNING = 'Data span is changing!'
                         print(WARNING)
 
                 else:
-                    self.dataspan = TPOLY.dataspan
+                    self.dataSpan = TPOLY.dataspan
 
                 if TPOLY.pulsar == self.pulsar:
                     self.polycos.append(TPOLY)

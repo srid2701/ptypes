@@ -17,7 +17,7 @@ INFtoVARS = {
     'Barycentered?           (1 yes, 0 no)': ['barycentric', strOfBool],
     'Number of bins in the time series': ['nbins', int],
     'Width of each time series bin (sec)': ['tsamp', float],
-    'Any breaks in the data? (1 yes, 0 no)': ['break', strOfBool],
+    'Any breaks in the data? (1 yes, 0 no)': ['breaks', strOfBool],
     'Type of observation (EM band)': ['obstype', str],
     'Beam diameter (arcsec)': ['beamdiam', float],
     'Dispersion measure (cm-3 pc)': ['dm', float],
@@ -44,7 +44,7 @@ def getError(string):
 
     return qty, err
 
-BESTPROFtoVARS = {
+BPROFtoVARS = {
     'Input file': ['fname', str],
     'Candidate': ['candname', str],
     'Telescope': ['telescope', str],

@@ -35,7 +35,7 @@ class PTypeBESTPROF(PType):
         of `PTypeBESTPROF`.
         """
 
-        BESTPROFKEYS = BESTPROFtoVARS.keys()
+        BESTPROFKEYS = BPROFtoVARS.keys()
         BESTPROFKEYS = list(BESTPROFKEYS)
 
         with open(self.fname, 'r') as infile:
@@ -52,11 +52,11 @@ class PTypeBESTPROF(PType):
             [header,
              data] = re.split(regex, lines)
 
-            # Split data along newline
-            # characters.
+            # Split header and data along
+            # newline characters.
 
-            data = re.split(r'\n+',
-                            data)
+            header = re.split(r'\n+', header)
+            data   = re.split(r'\n+', data)
 
             for indx, line in enumerate(data):
 
@@ -114,7 +114,7 @@ class PTypeBESTPROF(PType):
                     else:
 
                         [key,
-                         ktype] = BESTPROFtoVARS[key]
+                         ktype] = BPROFtoVARS[key]
 
                         # If value is N/A, exchange it
                         # for `None`. Otherwise, try a
