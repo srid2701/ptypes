@@ -1,3 +1,7 @@
+import numpy as np
+
+from ptypes.consts import TWOPI
+
 def doppler(OBSFREQ,
             VOVERC):
 
@@ -87,7 +91,7 @@ def FFTrotate(array,
     iTWOPI = complex(0.0, TWOPI)
     phasor = np.exp(iTWOPI
                     * freqs
-                    * bins
+                    * nbins
                     / float(array.size))
 
     sarray = np.fft.irfft((phasor

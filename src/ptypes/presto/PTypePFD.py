@@ -868,7 +868,7 @@ class PTypePFD(PType):
             sindxs = range(self.nsub)
 
             for pindx in pindxs:
-                for sindx in sindx:
+                for sindx in sindxs:
 
                     temprof = self.profs[pindx,
                                          sindx,
@@ -877,7 +877,7 @@ class PTypePFD(PType):
                     self.profs[pindx,
                                sindx] = FFTrotate(temprof,
                                                   delayBINS[sindx])
-
+            
             # NOTE: Since the rotation process we just did
             # slightly changes the values of the profiles,
             # we need to re-calculate the average profile
