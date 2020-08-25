@@ -4,11 +4,15 @@ import numpy as np
 from pathlib import Path
 
 from ptypes import PType
-from ptypes.consts.misc   import *
-from ptypes.consts.presto import *
+from ptypes.consts.exts    import *
+from ptypes.consts.misc    import *
+from ptypes.consts.presto  import *
 from ptypes.consts.phymath import *
 
-from ptypes.utils import (delays,
+from ptypes.tempo import PTypePOLYCOS
+
+from ptypes.utils import (PtoF,
+                          delays,
                           doppler,
                           FFTrotate)
 
@@ -18,11 +22,10 @@ from .PTypeBESTPROF import PTypeBESTPROF
 
 class PTypePFD(PType):
 
-    BPROFEXT   = '.bestprof'
-    POLYCOSEXT = '.polycos'
-
     RALEN  = 16
     DECLEN = 16
+
+    PSRSUFFIX = 'PSR_'
 
     """
     Class to handle `PFD` (PRESTO Folded Data) files.
@@ -276,7 +279,7 @@ class PTypePFD(PType):
             try:
 
                 bprofname = ''.join([str(self.fname),
-                                     self.BPROFEXT])
+                                     BPROFEXT])
 
                 self.bestprof = PTypeBESTPROF(bprofname)
 
@@ -430,6 +433,17 @@ class PTypePFD(PType):
                                        btype='double')
 
             self._setAttrs_(keys, values)
+
+            # Save current values of the pulsar period,
+            # period derivative and double derivative.
+            # NOTE: Have to convert the fold values to
+            # periods from frequencies.
+
+            [self.currp1,
+             self.currp2,
+             self.currp3] = PtoF(self.foldp1,
+                                 self.foldp2,
+                                 self.foldp3)
 
             # Can start reading attributes the usual way.
 
@@ -622,21 +636,27 @@ class PTypePFD(PType):
         self.numfold  = np.add.reduce(self.pointsPERFOLD)
         self.numsamp  = self.numfold * self.tsamp
         self.avgprof  = (self.profs / self.proflen).sum()
-        #self.varprof = self._calcVarProf_()
+        self.varprof = self.calcvar()
 
-        #self.DOFnom = float(self.proflen) - 1.0
-        #self.DOFcor = self.DOFnom * self.DOFCORRECTION
+        self.dtperBIN = (self.currp1
+                         / self.proflen
+                         / self.tsamp)
+
+        self.DOFnom = float(self.proflen) - 1.0
+        self.DOFcor = self.DOFnom * self.DOFCORRECTION()
 
         self.subBARYFREQS = None
-        """
+
         if self.avgoverc == 0:
 
-            if self.candname.startswith(PSRSUFFIX):
+            if self.candname.startswith(self.PSRSUFFIX):
 
                 try:
 
-                    POLYFILE = self.fname.with_suffix(POLYCOSEXT)
-                    self.polycos = (PTypePOLYCOS(fname=POLYFILE))
+                    POLYFILE = ''.join([str(self.fname),
+                                        POLYCOSEXT])
+
+                    self.polycos = PTypePOLYCOS(POLYFILE)
 
                     midMJD = self.tepoch + (0.5
                                             * self.numsamp
@@ -644,9 +664,7 @@ class PTypePFD(PType):
 
                     self.avgoverc = (self
                                      .polycos
-                                     .getvoverc(int(mindMJD),
-                                                (midMJD
-                                                 - int(midMJD))))
+                                     .getVOVERC(midMJD))
 
                     self.subBARYFREQS = (self.subFREQS
                                          * (1.0
@@ -659,7 +677,7 @@ class PTypePFD(PType):
             if self.subBARYFREQS is None:
 
                 self.subBARYFREQS = self.subFREQS
-        """
+
     def write(self,
               fname):
 
@@ -831,6 +849,54 @@ class PTypePFD(PType):
                     statarr = cstats[sindx].tobytes()
                     infile.write(statarr)
 
+    def DOFCORRECTION(self):
+
+        """
+        """
+
+        POW = 1.806
+        FAC = 0.960
+
+        corDOF = (self.dtperBIN
+                  * FAC
+                  * (1.0
+                     + self.dtperBIN ** POW) ** (-1.0/POW))
+
+        return corDOF
+
+    def canTime(self):
+
+        """
+        """
+
+        pass
+
+    def calcvar(self):
+
+        """
+        """
+
+        varprof = 0.0
+
+        sindxs = range(self.nsub)
+        pindxs = range(self.npart)
+
+        sindxs = [sindx
+                  for sindx in sindxs
+                  if sindx not in self.killSUBBANDS]
+
+        pindxs = [pindx
+                  for pindx in pindxs
+                  if pindx not in self.killINTERVALS]
+
+        for pindx in pindxs:
+            for sindx in sindxs:
+                varprof = (varprof
+                           + self.stats[pindx][sindx][5])
+
+        return varprof
+
+
     def dedisperse(self,
                    DM=None,
                    INTERP=False,
@@ -877,7 +943,7 @@ class PTypePFD(PType):
                     self.profs[pindx,
                                sindx] = FFTrotate(temprof,
                                                   delayBINS[sindx])
-            
+
             # NOTE: Since the rotation process we just did
             # slightly changes the values of the profiles,
             # we need to re-calculate the average profile

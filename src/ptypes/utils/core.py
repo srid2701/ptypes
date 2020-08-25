@@ -2,6 +2,38 @@ import numpy as np
 
 from ptypes.consts import TWOPI
 
+def PtoF(P,
+         PD,
+         PDD):
+
+    """
+    Convert the pulsar period, period derivative and period
+    double derivative, to their frequency counterparts, and
+    vice versa. Works because P = 1/F. 
+    """
+
+    F  = 1.0 / P
+    FD = -PD / (P * P)
+
+    if PDD is None:
+        return [F,
+                FD]
+
+    else:
+
+        if PDD is 0.0:
+            FDD = 0.0
+        else:
+            FDD = (2.0
+                   * (PD * PD)
+                   / (P ** 3.0)
+                   - PDD
+                   / (P * P))
+
+        return [F,
+                FD,
+                FDD]
+
 def doppler(OBSFREQ,
             VOVERC):
 

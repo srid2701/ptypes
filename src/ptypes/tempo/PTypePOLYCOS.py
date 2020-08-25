@@ -133,7 +133,7 @@ class POLYCO(object):
             self.refPhase = float(params[0])
             self.refFreq  = float(params[1])
             self.obsv     = str(params[2])
-            self.dataSpan = int(params[3])
+            self.dataspan = int(params[3])
             self.numCoeff = int(params[4])
             self.obsFreq  = float(params[5])
 
@@ -171,6 +171,48 @@ class POLYCO(object):
                               .polynomial
                               .polynomial
                               .Polynomial(self.coeffs))
+
+    def phase(self,
+              MJD):
+        """
+        """
+
+        return self.rotation(MJD) % 1
+
+    def rotation(self,
+                 MJD):
+
+        """
+        """
+
+        TSAMP = (MJD - self.TMID) * 1440.0
+        PHASE = self.phasepoly(TSAMP)
+        PHASE = PHASE + self.refPhase + (TSAMP
+                                         * 60.0
+                                         * self.refFreq)
+        return PHASE
+
+    def freq(self,
+             MJD):
+
+        """
+        """
+
+        TSAMP = (MJD - self.TMID) * 1440.0
+        FREQ  = 0.0
+
+        COEFFS = reversed(self.coeffs)
+
+        for indx, coeff in enumerate(COEFFS):
+
+            FREQ = (TSAMP
+                    * FREQ
+                    + indx
+                    * coeff)
+
+        return (self.refFreq
+                + FREQ
+                / 60.0)
 
 
 class PTypePOLYCOS(PType):
@@ -230,12 +272,12 @@ class PTypePOLYCOS(PType):
 
                 if len(self.polycos):
 
-                    if TPOLY.dataspan != self.dataSpan:
+                    if TPOLY.dataspan != self.dataspan:
                         WARNING = 'Data span is changing!'
                         print(WARNING)
 
                 else:
-                    self.dataSpan = TPOLY.dataspan
+                    self.dataspan = TPOLY.dataspan
 
                 if TPOLY.pulsar == self.pulsar:
                     self.polycos.append(TPOLY)
@@ -245,6 +287,70 @@ class PTypePOLYCOS(PType):
 
             self.numpoly = len(self.polycos)
 
+            self.TMIDs  = np.asarray(self.TMIDs)
+            self.VRANGE = (0.5
+                           * self.dataspan
+                           / 1440.0)
+
             ENDMSG = 'Read {:d} polycos for PSR {:s}.'
             ENDMSG = ENDMSG.format(self.numpoly, self.pulsar)
             print(ENDMSG)
+
+    def getPOLYCO(self,
+                  MJD):
+
+        """
+        """
+
+        VPOLY = np.fabs(self.TMIDs - MJD)
+        VPOLY = np.argmin(VPOLY)
+
+        VALID = np.fabs(self.TMIDs[VPOLY]
+                        - MJD)
+
+        if VALID > self.VRANGE:
+            ERRMSG = 'Cannot find a valid polyco at {:f}'
+            ERRMSG = ERRMSG.format(MJD)
+            raise ValueError(ERRMSG)
+
+        return VPOLY
+
+    def getPHASE(self,
+                 MJD):
+
+        """
+        """
+
+        VPOLY = self.getPOLYCO(MJD)
+        PHASE = self.polycos[VPOLY].phase(MJD)
+        return PHASE
+
+    def getROTATION(self,
+                    MJD):
+
+        """
+        """
+
+        VPOLY    = self.getPOLYCO(MJD)
+        ROTATION = self.polycos[VPOLY].rotation(MJD)
+        return ROTATION
+
+    def getFREQ(self,
+                MJD):
+
+        """
+        """
+
+        VPOLY = self.getPOLYCO(MJD)
+        FREQ  = self.polycos[VPOLY].freq(MJD)
+        return FREQ
+
+    def getVOVERC(self,
+                  MJD):
+
+        """
+        """
+
+        VPOLY   = self.getPOLYCO(MJD)
+        DOPPLER = self.polycos[VPOLY].doppler
+        return DOPPLER

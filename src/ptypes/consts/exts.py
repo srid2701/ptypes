@@ -2,12 +2,13 @@
 
 ## PRESTO ##
 
-INFEXT   = '.inf'
-DATEXT   = '.dat'
-FFTEXT   = '.fft'
-PFDEXT   = '.pfd'
-ACCELEXT = '.cand'
-BPROFEXT = '.bestprof'
+INFEXT     = '.inf'
+DATEXT     = '.dat'
+FFTEXT     = '.fft'
+PFDEXT     = '.pfd'
+ACCELEXT   = '.cand'
+BPROFEXT   = '.bestprof'
+POLYCOSEXT = '.polycos'
 
 ## SIGPROC ##
 
