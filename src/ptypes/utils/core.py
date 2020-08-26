@@ -2,6 +2,33 @@ import numpy as np
 
 from ptypes.consts import TWOPI
 
+
+def unpack2bit(data):
+
+    """
+    """
+
+    pieces = [np.bitwise_and(data >> 0x06, 0x03),
+              np.bitwise_and(data >> 0x04, 0x03),
+              np.bitwise_and(data >> 0x02, 0x03),
+              np.bitwise_and(data >> 0x03)]
+
+    bits = np.dstack(pieces).flatten()
+
+    return bits
+
+def unpack4bit(data):
+
+    """
+    """
+
+    pieces = [np.bitwise_and(0x04, 0x0F),
+              np.bitwise_and(0x0F)]
+
+    bits = np.dstack(pieces).flatten()
+
+    return bits
+
 def PtoF(P,
          PD,
          PDD):
@@ -9,7 +36,7 @@ def PtoF(P,
     """
     Convert the pulsar period, period derivative and period
     double derivative, to their frequency counterparts, and
-    vice versa. Works because P = 1/F. 
+    vice versa. Works because P = 1/F.
     """
 
     F  = 1.0 / P
