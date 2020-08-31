@@ -63,7 +63,7 @@ class PTypeFFT(PType):
         # be raised.
 
         if inf is None:
-            inf = Path(f'{bsname}.inf')
+            inf = Path('{}.inf'.format(bsname))
         else:
             inf = Path(inf)
 
