@@ -38,59 +38,56 @@ class PTypeBESTPROF(PType):
         BESTPROFKEYS = BPROFtoVARS.keys()
         BESTPROFKEYS = list(BESTPROFKEYS)
 
-        with open(self.fname, 'r') as infile:
+        with open(str(self.fname), "r") as infile:
 
             lines = infile.read()
 
             # Regular expression to separate header
             # and data in a `BESTPROF` file.
 
-            regex = re.compile(r'\#{2,}')
+            regex = re.compile(r"\#{2,}")
 
             # Separate header and data.
 
-            [header,
-             data] = re.split(regex, lines)
+            [header, data] = re.split(regex, lines)
 
             # Split header and data along
             # newline characters.
 
-            header = re.split(r'\n+', header)
-            data   = re.split(r'\n+', data)
+            header = re.split(r"\n+", header)
+            data = re.split(r"\n+", data)
 
             for indx, line in enumerate(data):
 
                 number = line.strip()
-                point  = re.split(r'\s+',
-                                  number)[-1]
+                point = re.split(r"\s+", number)[-1]
                 data[indx] = point
 
             # Remove empties from data.
 
-            data = [number
-                    for number in data
-                    if number]
+            data = [number for number in data if number]
 
             # Type convert data to a `numpy`
             # array and store it in this class
             # as an attribute.
 
-            data = np.asarray(data, dtype='float32')
+            data = np.asarray(data, dtype="float32")
 
-            setattr(self,
-                    'data',
-                    data)
+            setattr(self, "data", data)
 
             # Regular expression to parse keys
             # and values from a `BESTPROF` file.
 
-            regex = re.compile(r'''
+            regex = re.compile(
+                r"""
                                \#               # The comment char.
                                \s+              # Whitespace.
                                (?P<key>.+)      # The key.
                                =                # The separator char.
                                (?P<value>.+)    # The value.
-                               ''', re.VERBOSE)
+                               """,
+                re.VERBOSE,
+            )
 
             for line in header:
 
@@ -101,26 +98,24 @@ class PTypeBESTPROF(PType):
                     # here. Use regular expressions
                     # to parse the file.
 
-                    matches = re.search(regex,
-                                        line)
+                    matches = re.search(regex, line)
 
                     mdict = matches.groupdict()
 
-                    key   = mdict['key'].strip()
-                    value = mdict['value'].strip()
+                    key = mdict["key"].strip()
+                    value = mdict["value"].strip()
 
                     if not key in BESTPROFKEYS:
                         continue
                     else:
 
-                        [key,
-                         ktype] = BPROFtoVARS[key]
+                        [key, ktype] = BPROFtoVARS[key]
 
                         # If value is N/A, exchange it
                         # for `None`. Otherwise, try a
                         # type conversion.
 
-                        if value != 'N/A':
+                        if value != "N/A":
                             value = ktype(value)
                         else:
                             value = None
@@ -138,20 +133,12 @@ class PTypeBESTPROF(PType):
                             err = value[1]
 
                             qtykey = key
-                            errkey = ''.join([key,
-                                             'err'])
+                            errkey = "".join([key, "err"])
 
+                            setattr(self, qtykey, float(qty))
 
-                            setattr(self,
-                                    qtykey,
-                                    float(qty))
-
-                            setattr(self,
-                                    errkey,
-                                    float(err))
+                            setattr(self, errkey, float(err))
 
                         else:
 
-                            setattr(self,
-                                    key,
-                                    value)
+                            setattr(self, key, value)

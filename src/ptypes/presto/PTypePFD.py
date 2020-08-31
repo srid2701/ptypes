@@ -4,17 +4,14 @@ import numpy as np
 from pathlib import Path
 
 from ptypes import PType
-from ptypes.consts.exts    import *
-from ptypes.consts.misc    import *
-from ptypes.consts.presto  import *
+from ptypes.consts.exts import *
+from ptypes.consts.misc import *
+from ptypes.consts.presto import *
 from ptypes.consts.phymath import *
 
 from ptypes.tempo import PTypePOLYCOS
 
-from ptypes.utils import (PtoF,
-                          delays,
-                          doppler,
-                          FFTrotate)
+from ptypes.utils import PtoF, delays, doppler, FFTrotate
 
 from .PTypeINF import PTypeINF
 from .PTypeBESTPROF import PTypeBESTPROF
@@ -22,10 +19,10 @@ from .PTypeBESTPROF import PTypeBESTPROF
 
 class PTypePFD(PType):
 
-    RALEN  = 16
+    RALEN = 16
     DECLEN = 16
 
-    PSRSUFFIX = 'PSR_'
+    PSRSUFFIX = "PSR_"
 
     """
     Class to handle `PFD` (PRESTO Folded Data) files.
@@ -37,8 +34,7 @@ class PTypePFD(PType):
     packaged in the newest release (v3.0.1) of `PRESTO`.
     """
 
-    def __init__(self,
-                 fname):
+    def __init__(self, fname):
 
         """
         Create an instance of `PTypePFD`.
@@ -48,10 +44,7 @@ class PTypePFD(PType):
 
         self.read()
 
-    def _readValues_(self,
-                     fobj,
-                     numval,
-                     btype='int'):
+    def _readValues_(self, fobj, numval, btype="int"):
 
         """
         Private function to read a series of binary values
@@ -79,41 +72,32 @@ class PTypePFD(PType):
 
         values = []
 
-        (ctype,
-         csize) = FORMATCHARS[btype]
+        (ctype, csize) = FORMATCHARS[btype]
 
         bufsize = csize * numval
 
-        buffer  = fobj.read(bufsize)
+        buffer = fobj.read(bufsize)
 
-        vtuples = struct.iter_unpack(ctype,
-                                     buffer)
+        vtuples = struct.iter_unpack(ctype, buffer)
 
         for vtuple in vtuples:
-            (value, ) = vtuple
+            (value,) = vtuple
             values.append(value)
 
         return values
 
-    def _writeValues_(self,
-                      fobj,
-                      values,
-                      btype='int'):
+    def _writeValues_(self, fobj, values, btype="int"):
 
-        """
-        """
+        """"""
 
-        (ctype,
-         csize) = FORMATCHARS[btype]
+        (ctype, csize) = FORMATCHARS[btype]
 
         cstring = ctype * len(values)
         packets = struct.pack(cstring, *values)
 
         fobj.write(packets)
 
-    def _readString_(self,
-                     fobj,
-                     btype='int'):
+    def _readString_(self, fobj, btype="int"):
 
         """
         Private function that reads a string from binary
@@ -135,39 +119,29 @@ class PTypePFD(PType):
             Default: 'int'
         """
 
-        (ctype,
-         csize) = FORMATCHARS[btype]
+        (ctype, csize) = FORMATCHARS[btype]
 
-        (strsize, ) = struct.unpack(ctype,
-                                    fobj.read(csize))
+        (strsize,) = struct.unpack(ctype, fobj.read(csize))
 
         string = fobj.read(strsize)
-        string = string.decode('utf-8')
+        string = string.decode("utf-8")
 
         return string
 
-    def _writeString_(self,
-                      fobj,
-                      string,
-                      btype='int'):
+    def _writeString_(self, fobj, string, btype="int"):
 
-        """
-        """
+        """"""
 
-        (ctype,
-         csize) = FORMATCHARS[btype]
+        (ctype, csize) = FORMATCHARS[btype]
 
         strsize = len(string)
         binsize = struct.pack(ctype, strsize)
-        string  = string.encode('utf-8')
+        string = string.encode("utf-8")
 
         fobj.write(binsize)
         fobj.write(string)
 
-    def _readArray_(self,
-                    fobj,
-                    lenarr,
-                    btype='double'):
+    def _readArray_(self, fobj, lenarr, btype="double"):
 
         """
         Private function that reads an array from binary
@@ -192,37 +166,29 @@ class PTypePFD(PType):
             Default: 'double'
         """
 
-        (ctype,
-         csize) = FORMATCHARS[btype]
+        (ctype, csize) = FORMATCHARS[btype]
 
         cstring = ctype * lenarr
 
         bufsize = csize * lenarr
-        buffer  = fobj.read(bufsize)
+        buffer = fobj.read(bufsize)
 
         array = struct.unpack(cstring, buffer)
 
         return array
 
-    def _writeArray_(self,
-                     fobj,
-                     array,
-                     btype='double'):
+    def _writeArray_(self, fobj, array, btype="double"):
 
-        """
-        """
+        """"""
 
-        (ctype,
-         csize) = FORMATCHARS[btype]
+        (ctype, csize) = FORMATCHARS[btype]
 
         cstring = ctype * len(array)
         packets = struct.pack(cstring, *array)
 
         fobj.write(packets)
 
-    def _setAttrs_(self,
-                   keys,
-                   values):
+    def _setAttrs_(self, keys, values):
 
         """
         Private function that stores a series of attributes
@@ -243,11 +209,9 @@ class PTypePFD(PType):
         for key, value in zip(keys, values):
             setattr(self, key, value)
 
-    def _getAttrs_(self,
-                   keys):
+    def _getAttrs_(self, keys):
 
-        """
-        """
+        """"""
 
         values = []
 
@@ -272,14 +236,13 @@ class PTypePFD(PType):
 
         # TODO: Take care of endianness!
 
-        with open(self.fname, 'rb') as infile:
+        with open(str(self.fname), "rb") as infile:
 
             # Try to read the `BESTPROF` file.
 
             try:
 
-                bprofname = ''.join([str(self.fname),
-                                     BPROFEXT])
+                bprofname = "".join([str(self.fname), BPROFEXT])
 
                 self.bestprof = PTypeBESTPROF(bprofname)
 
@@ -291,18 +254,20 @@ class PTypePFD(PType):
             # from PFD file, and then store
             # them as attributes in this class.
 
-            keys = ['numdms',
-                    'numperiods',
-                    'numpdots',
-                    'nsub',
-                    'npart',
-                    'proflen',
-                    'numchan',
-                    'pstep',
-                    'pdstep',
-                    'dmstep',
-                    'ndmfact',
-                    'npfact']
+            keys = [
+                "numdms",
+                "numperiods",
+                "numpdots",
+                "nsub",
+                "npart",
+                "proflen",
+                "numchan",
+                "pstep",
+                "pdstep",
+                "dmstep",
+                "ndmfact",
+                "npfact",
+            ]
 
             values = self._readValues_(infile, len(keys))
             self._setAttrs_(keys, values)
@@ -320,10 +285,7 @@ class PTypePFD(PType):
             #
             # Need to decode the string too.
 
-            keys = ['filename',
-                    'candname',
-                    'telescope',
-                    'pgdev']
+            keys = ["filename", "candname", "telescope", "pgdev"]
 
             for key in keys:
                 string = self._readString_(infile)
@@ -340,97 +302,78 @@ class PTypePFD(PType):
 
             test = infile.read(self.RALEN)
 
-            if not test[:8]==b"Unknown" and b':' in test:
+            if not test[:8] == b"Unknown" and b":" in test:
 
-                self.rastr = test[:test.find(b'\0')]
-                self.rastr = self.rastr.decode('utf-8')
+                self.rastr = test[: test.find(b"\0")]
+                self.rastr = self.rastr.decode("utf-8")
 
                 test = infile.read(self.DECLEN)
 
-                self.decstr = test[:test.find(b'\0')]
-                self.decstr = self.decstr.decode('utf-8')
+                self.decstr = test[: test.find(b"\0")]
+                self.decstr = self.decstr.decode("utf-8")
             else:
-                self.rastr  = "Unknown"
+                self.rastr = "Unknown"
                 self.decstr = "Unknown"
 
-                if ':' not in test:
+                if ":" not in test:
                     infile.seek(-self.RALEN, 1)
 
             # Can start reading attributes the usual
             # way. NOTE: Most attributes from now on
             # are `doubles` rather than `ints`.
 
-            keys = ['tsamp',
-                    'startT',
-                    'endT',
-                    'tepoch',
-                    'bepoch',
-                    'avgoverc',
-                    'lofreq',
-                    'chanwidth',
-                    'bestdm']
+            keys = [
+                "tsamp",
+                "startT",
+                "endT",
+                "tepoch",
+                "bepoch",
+                "avgoverc",
+                "lofreq",
+                "chanwidth",
+                "bestdm",
+            ]
 
-            values = self._readValues_(infile,
-                                       len(keys),
-                                       btype='double')
+            values = self._readValues_(infile, len(keys), btype="double")
 
             self._setAttrs_(keys, values)
 
             # Stop!
 
-            (ctype,
-             csize) = FORMATCHARS['float']
+            (ctype, csize) = FORMATCHARS["float"]
 
             bufsize = csize * 2
-            buffer  = infile.read(bufsize)
+            buffer = infile.read(bufsize)
 
-            (self.topopow,
-             self._ttmp_) = struct.unpack(ctype * 2,
-                                          buffer)
+            (self.topopow, self._ttmp_) = struct.unpack(ctype * 2, buffer)
 
-            keys = ['topop1',
-                    'topop2',
-                    'topop3']
+            keys = ["topop1", "topop2", "topop3"]
 
-            values = self._readValues_(infile,
-                                       len(keys),
-                                       btype='double')
+            values = self._readValues_(infile, len(keys), btype="double")
 
             self._setAttrs_(keys, values)
 
             # Stop!
 
-            buffer  = infile.read(bufsize)
+            buffer = infile.read(bufsize)
 
-            (self.barypow,
-             self._btmp_) = struct.unpack(ctype * 2,
-                                          buffer)
+            (self.barypow, self._btmp_) = struct.unpack(ctype * 2, buffer)
 
-            keys = ['baryp1',
-                    'baryp2',
-                    'baryp3']
+            keys = ["baryp1", "baryp2", "baryp3"]
 
-            values = self._readValues_(infile,
-                                       len(keys),
-                                       btype='double')
+            values = self._readValues_(infile, len(keys), btype="double")
 
             self._setAttrs_(keys, values)
 
             # Stop!
 
-            buffer  = infile.read(bufsize)
+            buffer = infile.read(bufsize)
 
-            (self.foldpow,
-             self._ftmp_) = struct.unpack(ctype * 2,
-                                          buffer)
+            (self.foldpow, self._ftmp_) = struct.unpack(ctype * 2, buffer)
 
-            keys = ['foldp1',
-                    'foldp2',
-                    'foldp3']
+            keys = ["foldp1", "foldp2", "foldp3"]
 
-            values = self._readValues_(infile,
-                                       len(keys),
-                                       btype='double')
+            values = self._readValues_(infile, len(keys), btype="double")
 
             self._setAttrs_(keys, values)
 
@@ -439,25 +382,15 @@ class PTypePFD(PType):
             # NOTE: Have to convert the fold values to
             # periods from frequencies.
 
-            [self.currp1,
-             self.currp2,
-             self.currp3] = PtoF(self.foldp1,
-                                 self.foldp2,
-                                 self.foldp3)
+            [self.currp1, self.currp2, self.currp3] = PtoF(
+                self.foldp1, self.foldp2, self.foldp3
+            )
 
             # Can start reading attributes the usual way.
 
-            keys = ['orbp',
-                    'orbe',
-                    'orbx',
-                    'orbw',
-                    'orbt',
-                    'orbpd',
-                    'orbwd']
+            keys = ["orbp", "orbe", "orbx", "orbw", "orbt", "orbpd", "orbwd"]
 
-            values = self._readValues_(infile,
-                                       len(keys),
-                                       btype='double')
+            values = self._readValues_(infile, len(keys), btype="double")
 
             self._setAttrs_(keys, values)
 
@@ -469,9 +402,11 @@ class PTypePFD(PType):
             #
             # NOTE: These arrays are `doubles`.
 
-            arrays = {'dms': self.numdms,
-                      'periods': self.numperiods,
-                      'pdots': self.numpdots}
+            arrays = {
+                "dms": self.numdms,
+                "periods": self.numperiods,
+                "pdots": self.numpdots,
+            }
 
             for name, length in arrays.items():
                 array = self._readArray_(infile, length)
@@ -484,17 +419,15 @@ class PTypePFD(PType):
             if self.numdms == 1:
                 self.dms = self.dms[0]
 
-            self.numprofs = self.nsub*self.npart
+            self.numprofs = self.nsub * self.npart
 
             # Stop! Need to read the folded profiles.
             # Folded profiles are 3-dimensional data
             # and have to be read accordingly.
 
-            dimensions = (self.npart,
-                          self.nsub,
-                          self.proflen)
+            dimensions = (self.npart, self.nsub, self.proflen)
 
-            self.profs = np.zeros(dimensions, dtype='d')
+            self.profs = np.zeros(dimensions, dtype="d")
 
             pindxs = range(self.npart)
             sindxs = range(self.nsub)
@@ -502,11 +435,9 @@ class PTypePFD(PType):
             for pindx in pindxs:
                 for sindx in sindxs:
 
-                    self.profs[pindx,
-                               sindx,
-                               :] = np.fromfile(infile,
-                                                np.float64,
-                                                self.proflen)
+                    self.profs[pindx, sindx, :] = np.fromfile(
+                        infile, np.float64, self.proflen
+                    )
 
             # If the number of frequency channels
             # is one, then that implies that the
@@ -523,19 +454,16 @@ class PTypePFD(PType):
                     infdata = PTypeINF(infname)
 
                     try:
-                        if infdata.obstype == 'Radio':
-                            self.bestdm  = infdata.dm
+                        if infdata.obstype == "Radio":
+                            self.bestdm = infdata.dm
                             self.numchan = infdata.nchan
                     except:
-                        self.bestdm  = 0.0
+                        self.bestdm = 0.0
                         self.numchan = 1
 
                 except IOError:
 
-                    ERRMSG = ('Warning! '
-                              'Cannot open the '
-                              '{:s} file '
-                              'for {:s}')
+                    ERRMSG = "Warning! " "Cannot open the " "{:s} file " "for {:s}"
                     ERRMSG.format(INFEXT, self.fname)
 
                     print(ERRMSG)
@@ -546,29 +474,23 @@ class PTypePFD(PType):
             #
             #
 
-            self.secBINS   = self.foldp1 * self.proflen
-            self.subCHANS  = self.numchan // self.nsub
-            self.subDFREQ  = self.chanwidth * self.subCHANS
+            self.secBINS = self.foldp1 * self.proflen
+            self.subCHANS = self.numchan // self.nsub
+            self.subDFREQ = self.chanwidth * self.subCHANS
 
-            self.hifreq = (self.lofreq
-                           + (self.numchan
-                              * self.chanwidth)
-                           - self.chanwidth)
+            self.hifreq = self.lofreq + (self.numchan * self.chanwidth) - self.chanwidth
 
-            self.subLFREQ = (self.lofreq
-                             + self.subDFREQ
-                             - self.chanwidth)
+            self.subLFREQ = self.lofreq + self.subDFREQ - self.chanwidth
 
-            self.subFREQS = (np.arange(self.nsub,
-                                       dtype='d')
-                             * self.subDFREQ
-                             + self.subLFREQ)
+            self.subFREQS = (
+                np.arange(self.nsub, dtype="d") * self.subDFREQ + self.subLFREQ
+            )
 
-            self.subDBINS = np.zeros(self.nsub, dtype='d')
+            self.subDBINS = np.zeros(self.nsub, dtype="d")
 
             self.currDM = 0.0
 
-            self.killSUBBANDS  = []
+            self.killSUBBANDS = []
             self.killINTERVALS = []
             self.pointsPERFOLD = []
 
@@ -584,19 +506,15 @@ class PTypePFD(PType):
             #   7. redchi
 
             self.numstats = 7
-            dimensions = (self.npart,
-                          self.nsub,
-                          self.numstats)
+            dimensions = (self.npart, self.nsub, self.numstats)
 
-            self.stats = np.zeros(dimensions, dtype='d')
+            self.stats = np.zeros(dimensions, dtype="d")
 
             for pindx in pindxs:
                 cstats = self.stats[pindx]
                 for sindx in sindxs:
 
-                    cstats[sindx] = np.fromfile(infile,
-                                                np.float64,
-                                                self.numstats)
+                    cstats[sindx] = np.fromfile(infile, np.float64, self.numstats)
 
                 # Append `numdata` from `foldstats`
                 # to the points per fold. This is
@@ -607,40 +525,28 @@ class PTypePFD(PType):
 
             self.pointsPERFOLD = np.asarray(self.pointsPERFOLD)
 
-        self.startSECS = ((np
-                           .add
-                           .accumulate([0,
-                                        *self.pointsPERFOLD[:-1]]))
-                          * self.tsamp)
+        self.startSECS = (np.add.accumulate([0, *self.pointsPERFOLD[:-1]])) * self.tsamp
 
-        self.midSECS = self.startSECS + (0.5
-                                         * self.tsamp
-                                         * self.pointsPERFOLD)
+        self.midSECS = self.startSECS + (0.5 * self.tsamp * self.pointsPERFOLD)
 
         if self.tepoch != 0.0:
 
-            self.startTOPOMJDS = (self.startSECS
-                                  / SECPERDAY) + self.tepoch
+            self.startTOPOMJDS = (self.startSECS / SECPERDAY) + self.tepoch
 
-            self.midTOPOMJDS = (self.midSECS
-                                / SECPERDAY) + self.tepoch
+            self.midTOPOMJDS = (self.midSECS / SECPERDAY) + self.tepoch
 
         if self.bepoch != 0.0:
 
-            self.startBARYMJDS = (self.startSECS
-                                  / SECPERDAY) + self.bepoch
+            self.startBARYMJDS = (self.startSECS / SECPERDAY) + self.bepoch
 
-            self.midBARYMJDS = (self.midSECS
-                                / SECPERDAY) + self.bepoch
+            self.midBARYMJDS = (self.midSECS / SECPERDAY) + self.bepoch
 
-        self.numfold  = np.add.reduce(self.pointsPERFOLD)
-        self.numsamp  = self.numfold * self.tsamp
-        self.avgprof  = (self.profs / self.proflen).sum()
+        self.numfold = np.add.reduce(self.pointsPERFOLD)
+        self.numsamp = self.numfold * self.tsamp
+        self.avgprof = (self.profs / self.proflen).sum()
         self.varprof = self.calcvar()
 
-        self.dtperBIN = (self.currp1
-                         / self.proflen
-                         / self.tsamp)
+        self.dtperBIN = self.currp1 / self.proflen / self.tsamp
 
         self.DOFnom = float(self.proflen) - 1.0
         self.DOFcor = self.DOFnom * self.DOFCORRECTION()
@@ -653,22 +559,15 @@ class PTypePFD(PType):
 
                 try:
 
-                    POLYFILE = ''.join([str(self.fname),
-                                        POLYCOSEXT])
+                    POLYFILE = "".join([str(self.fname), POLYCOSEXT])
 
                     self.polycos = PTypePOLYCOS(POLYFILE)
 
-                    midMJD = self.tepoch + (0.5
-                                            * self.numsamp
-                                            / SECPERDAY)
+                    midMJD = self.tepoch + (0.5 * self.numsamp / SECPERDAY)
 
-                    self.avgoverc = (self
-                                     .polycos
-                                     .getVOVERC(midMJD))
+                    self.avgoverc = self.polycos.getVOVERC(midMJD)
 
-                    self.subBARYFREQS = (self.subFREQS
-                                         * (1.0
-                                            + self.avgoverc))
+                    self.subBARYFREQS = self.subFREQS * (1.0 + self.avgoverc)
 
                 except IOError:
 
@@ -678,35 +577,33 @@ class PTypePFD(PType):
 
                 self.subBARYFREQS = self.subFREQS
 
-    def write(self,
-              fname):
+    def write(self, fname):
 
         """
         Write an instance of `PTypePFD` into a `PFD` file.
         """
 
-        with open(fname, 'wb+') as infile:
+        with open(str(fname), "wb+") as infile:
 
-            keys = ['numdms',
-                    'numperiods',
-                    'numpdots',
-                    'nsub',
-                    'npart',
-                    'proflen',
-                    'numchan',
-                    'pstep',
-                    'pdstep',
-                    'dmstep',
-                    'ndmfact',
-                    'npfact']
+            keys = [
+                "numdms",
+                "numperiods",
+                "numpdots",
+                "nsub",
+                "npart",
+                "proflen",
+                "numchan",
+                "pstep",
+                "pdstep",
+                "dmstep",
+                "ndmfact",
+                "npfact",
+            ]
 
             values = self._getAttrs_(keys)
             self._writeValues_(infile, values)
 
-            keys = ['filename',
-                    'candname',
-                    'telescope',
-                    'pgdev']
+            keys = ["filename", "candname", "telescope", "pgdev"]
 
             for key in keys:
                 string = getattr(self, key)
@@ -714,26 +611,24 @@ class PTypePFD(PType):
 
             try:
 
-                pad = b'\x00'
+                pad = b"\x00"
 
-                if not ((self.rastr == "Unknown")
-                        and
-                        (self.decstr == "Unknown")):
+                if not ((self.rastr == "Unknown") and (self.decstr == "Unknown")):
 
-                    rabinary = self.rastr.encode('utf-8')
-                    numpad   = (self.RALEN - len(rabinary))
-                    padding  = pad * numpad
-                    rabinary = b''.join([rabinary, padding])
+                    rabinary = self.rastr.encode("utf-8")
+                    numpad = self.RALEN - len(rabinary)
+                    padding = pad * numpad
+                    rabinary = b"".join([rabinary, padding])
 
-                    decbinary = self.decstr.encode('utf-8')
-                    numpad    = (self.DECLEN - len(decbinary))
-                    padding   = pad * numpad
-                    decbinary  = b''.join([decbinary, padding])
+                    decbinary = self.decstr.encode("utf-8")
+                    numpad = self.DECLEN - len(decbinary)
+                    padding = pad * numpad
+                    decbinary = b"".join([decbinary, padding])
 
                 else:
 
-                    rabinary  = b'Unknown'
-                    decbinary = b'Unknown'
+                    rabinary = b"Unknown"
+                    decbinary = b"Unknown"
 
                 infile.write(rabinary)
                 infile.write(decbinary)
@@ -741,90 +636,61 @@ class PTypePFD(PType):
             except AttributeError:
                 pass
 
-            keys = ['tsamp',
-                    'startT',
-                    'endT',
-                    'tepoch',
-                    'bepoch',
-                    'avgoverc',
-                    'lofreq',
-                    'chanwidth',
-                    'bestdm']
+            keys = [
+                "tsamp",
+                "startT",
+                "endT",
+                "tepoch",
+                "bepoch",
+                "avgoverc",
+                "lofreq",
+                "chanwidth",
+                "bestdm",
+            ]
 
             values = self._getAttrs_(keys)
 
-            self._writeValues_(infile,
-                               values,
-                               btype='double')
+            self._writeValues_(infile, values, btype="double")
 
-            (ctype,
-             csize) = FORMATCHARS['float']
+            (ctype, csize) = FORMATCHARS["float"]
 
-            topopow = struct.pack(ctype * 2,
-                                  self.topopow,
-                                  self._ttmp_)
+            topopow = struct.pack(ctype * 2, self.topopow, self._ttmp_)
 
             infile.write(topopow)
 
-            keys = ['topop1',
-                    'topop2',
-                    'topop3']
+            keys = ["topop1", "topop2", "topop3"]
 
             values = self._getAttrs_(keys)
 
-            self._writeValues_(infile,
-                               values,
-                               btype='double')
+            self._writeValues_(infile, values, btype="double")
 
-            barypow = struct.pack(ctype * 2,
-                                  self.barypow,
-                                  self._btmp_)
+            barypow = struct.pack(ctype * 2, self.barypow, self._btmp_)
 
             infile.write(barypow)
 
-            keys = ['baryp1',
-                    'baryp2',
-                    'baryp3']
+            keys = ["baryp1", "baryp2", "baryp3"]
 
             values = self._getAttrs_(keys)
 
-            self._writeValues_(infile,
-                               values,
-                               btype='double')
+            self._writeValues_(infile, values, btype="double")
 
-            foldpow = struct.pack(ctype * 2,
-                                  self.foldpow,
-                                  self._ftmp_)
+            foldpow = struct.pack(ctype * 2, self.foldpow, self._ftmp_)
 
             infile.write(foldpow)
 
-            keys = ['foldp1',
-                    'foldp2',
-                    'foldp3']
+            keys = ["foldp1", "foldp2", "foldp3"]
 
             values = self._getAttrs_(keys)
 
-            self._writeValues_(infile,
-                               values,
-                               btype='double')
+            self._writeValues_(infile, values, btype="double")
 
-            keys = ['orbp',
-                    'orbe',
-                    'orbx',
-                    'orbw',
-                    'orbt',
-                    'orbpd',
-                    'orbwd']
+            keys = ["orbp", "orbe", "orbx", "orbw", "orbt", "orbpd", "orbwd"]
 
             values = self._getAttrs_(keys)
 
-            self._writeValues_(infile,
-                               values,
-                               btype='double')
+            self._writeValues_(infile, values, btype="double")
 
-            arrays = ['dms',
-                      'periods',
-                      'pdots']
+            arrays = ["dms", "periods", "pdots"]
 
             for name in arrays:
                 array = getattr(self, name)
@@ -836,9 +702,7 @@ class PTypePFD(PType):
             for pindx in pindxs:
                 for sindx in sindxs:
 
-                    profile = self.profs[pindx,
-                                         sindx,
-                                         :].tobytes()
+                    profile = self.profs[pindx, sindx, :].tobytes()
 
                     infile.write(profile)
 
@@ -851,59 +715,43 @@ class PTypePFD(PType):
 
     def DOFCORRECTION(self):
 
-        """
-        """
+        """"""
 
         POW = 1.806
         FAC = 0.960
 
-        corDOF = (self.dtperBIN
-                  * FAC
-                  * (1.0
-                     + self.dtperBIN ** POW) ** (-1.0/POW))
+        corDOF = self.dtperBIN * FAC * (1.0 + self.dtperBIN ** POW) ** (-1.0 / POW)
 
         return corDOF
 
     def canTime(self):
 
-        """
-        """
+        """"""
 
         pass
 
     def calcvar(self):
 
-        """
-        """
+        """"""
 
         varprof = 0.0
 
         sindxs = range(self.nsub)
         pindxs = range(self.npart)
 
-        sindxs = [sindx
-                  for sindx in sindxs
-                  if sindx not in self.killSUBBANDS]
+        sindxs = [sindx for sindx in sindxs if sindx not in self.killSUBBANDS]
 
-        pindxs = [pindx
-                  for pindx in pindxs
-                  if pindx not in self.killINTERVALS]
+        pindxs = [pindx for pindx in pindxs if pindx not in self.killINTERVALS]
 
         for pindx in pindxs:
             for sindx in sindxs:
-                varprof = (varprof
-                           + self.stats[pindx][sindx][5])
+                varprof = varprof + self.stats[pindx][sindx][5]
 
         return varprof
 
+    def dedisperse(self, DM=None, INTERP=False, DOPPLER=False):
 
-    def dedisperse(self,
-                   DM=None,
-                   INTERP=False,
-                   DOPPLER=False):
-
-        """
-        """
+        """"""
 
         if DM is None:
             DM = self.bestdm
@@ -914,17 +762,14 @@ class PTypePFD(PType):
         # topocentric observing frequencies.
 
         if DOPPLER:
-            FREQS = doppler(self.subFREQS,
-                            self.avgoverc)
+            FREQS = doppler(self.subFREQS, self.avgoverc)
         else:
             FREQS = self.subFREQS
 
         subDELAYS = delays(DM, FREQS)
-        subDELAYS = (subDELAYS - subDELAYS[-1])
+        subDELAYS = subDELAYS - subDELAYS[-1]
 
-        delayBINS =  (subDELAYS
-                      * self.secBINS
-                      - self.subDBINS)
+        delayBINS = subDELAYS * self.secBINS - self.subDBINS
 
         if INTERP:
 
@@ -936,13 +781,9 @@ class PTypePFD(PType):
             for pindx in pindxs:
                 for sindx in sindxs:
 
-                    temprof = self.profs[pindx,
-                                         sindx,
-                                         :]
+                    temprof = self.profs[pindx, sindx, :]
 
-                    self.profs[pindx,
-                               sindx] = FFTrotate(temprof,
-                                                  delayBINS[sindx])
+                    self.profs[pindx, sindx] = FFTrotate(temprof, delayBINS[sindx])
 
             # NOTE: Since the rotation process we just did
             # slightly changes the values of the profiles,
@@ -960,29 +801,23 @@ class PTypePFD(PType):
 
             for sindx in sindxs:
 
-                rotBINS = (int(subDBINS[sindx])
-                           % self.proflen)
+                rotBINS = int(subDBINS[sindx]) % self.proflen
 
                 if rotBINS != 0:
 
-                    subDATA = self.profs[:,
-                                         sindx,
-                                         :]
+                    subDATA = self.profs[:, sindx, :]
 
-                    subTUPLE = (subDATA[:,rotBINS:],
-                                subDATA[:,:rotBINS])
+                    subTUPLE = (subDATA[:, rotBINS:], subDATA[:, :rotBINS])
 
-                    self.profs[:,
-                               sindx] = np.concatenate(subTUPLE, 1)
+                    self.profs[:, sindx] = np.concatenate(subTUPLE, 1)
 
         self.subDBINS = self.subDBINS + subDBINS
-        self.sumPROF  = self.profs.sum(0).sum(0)
+        self.sumPROF = self.profs.sum(0).sum(0)
 
         profCHECK = (self.sumPROF / self.proflen).sum() - self.avgprof
 
         if np.fabs(profCHECK > 1.0):
-            ERRMSG = ('Average profile does not '
-                      'have the correct value.  ')
+            ERRMSG = "Average profile does not " "have the correct value.  "
 
             print(ERRMSG)
 

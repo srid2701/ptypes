@@ -10,44 +10,43 @@ def test_read(datadir):
     Test reading in a `PFD` file using `PTypePFD`.
     """
 
-    testpath = Path.joinpath(datadir, 'test.pfd')
+    testpath = Path.joinpath(datadir, "test.pfd")
 
     pfdobj = PTypePFD(testpath)
 
-    assert pfdobj.numdms     == 129
+    assert pfdobj.numdms == 129
     assert pfdobj.numperiods == 129
-    assert pfdobj.numpdots   == 129
-    assert pfdobj.nsub       == 128
-    assert pfdobj.npart      == 60
-    assert pfdobj.proflen    == 64
-    assert pfdobj.numchan    == 4096
-    assert pfdobj.pstep      == 1
-    assert pfdobj.pdstep     == 2
-    assert pfdobj.dmstep     == 1
-    assert pfdobj.ndmfact    == 1
-    assert pfdobj.npfact     == 1
+    assert pfdobj.numpdots == 129
+    assert pfdobj.nsub == 128
+    assert pfdobj.npart == 60
+    assert pfdobj.proflen == 64
+    assert pfdobj.numchan == 4096
+    assert pfdobj.pstep == 1
+    assert pfdobj.pdstep == 2
+    assert pfdobj.dmstep == 1
+    assert pfdobj.ndmfact == 1
+    assert pfdobj.npfact == 1
 
-    assert pfdobj.filename == ('fake_noise'
-                               '.4096ch'
-                               '.8bit'
-                               '.J2144-3933'
-                               '_DC1'
-                               '.fil')
+    assert pfdobj.filename == (
+        "fake_noise" ".4096ch" ".8bit" ".J2144-3933" "_DC1" ".fil"
+    )
 
-    assert pfdobj.candname  == 'PSR_2144-3933'
-    assert pfdobj.telescope == 'GMRT'
+    assert pfdobj.candname == "PSR_2144-3933"
+    assert pfdobj.telescope == "GMRT"
 
-    assert pfdobj.pgdev == ('fake_noise'
-                            '.4096ch'
-                            '.8bit'
-                            '.J2144-3933'
-                            '_DC1'
-                            '_PSR_2144-3933'
-                            '.pfd'
-                            '.ps/CPS')
+    assert pfdobj.pgdev == (
+        "fake_noise"
+        ".4096ch"
+        ".8bit"
+        ".J2144-3933"
+        "_DC1"
+        "_PSR_2144-3933"
+        ".pfd"
+        ".ps/CPS"
+    )
 
-    assert pfdobj.rastr  == '21:44:00.0000'
-    assert pfdobj.decstr == '-39:33:00.0000'
+    assert pfdobj.rastr == "21:44:00.0000"
+    assert pfdobj.decstr == "-39:33:00.0000"
 
     assert pytest.approx(pfdobj.tsamp, 0.00016384)
     assert pytest.approx(pfdobj.startT, 0.0)
@@ -104,15 +103,14 @@ def test_read(datadir):
     assert pytest.approx(pfdobj.hifreq, 499.97558599999996)
     assert pytest.approx(pfdobj.subLFREQ, 301.538594)
 
-    assert pfdobj.subFREQS.shape      == (128,)
-    assert pfdobj.subDBINS.shape      == (128,)
+    assert pfdobj.subFREQS.shape == (128,)
+    assert pfdobj.subDBINS.shape == (128,)
     assert pfdobj.pointsPERFOLD.shape == (60,)
-    assert pfdobj.startSECS.shape     == (60,)
-    assert pfdobj.midSECS.shape       == (60,)
+    assert pfdobj.startSECS.shape == (60,)
+    assert pfdobj.midSECS.shape == (60,)
 
 
-def test_write(datadir,
-               tmp_path):
+def test_write(datadir, tmp_path):
 
     """
     Test writing out a `PFD` file using `PTypePFD`.
@@ -122,7 +120,7 @@ def test_write(datadir,
     and compare the two `PTypePFD` objects.
     """
 
-    testpath = Path.joinpath(datadir, 'test.pfd')
-    fpath    = Path.joinpath(tmp_path, 'test.pfd')
-    pfdobj   = PTypePFD(testpath).write(fpath)
-    npfdobj  = PTypePFD(fpath)
+    testpath = Path.joinpath(datadir, "test.pfd")
+    fpath = Path.joinpath(tmp_path, "test.pfd")
+    pfdobj = PTypePFD(testpath).write(fpath)
+    npfdobj = PTypePFD(fpath)

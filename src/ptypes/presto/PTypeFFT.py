@@ -7,6 +7,7 @@ from ptypes.consts.presto import *
 
 from .PTypeINF import PTypeINF
 
+
 class PTypeFFT(PType):
 
     """
@@ -23,9 +24,7 @@ class PTypeFFT(PType):
     rest of the package.
     """
 
-    def __init__(self,
-                 fname,
-                 inf=None):
+    def __init__(self, fname, inf=None):
 
         """
         Create an instance of `PTypeFFT`.
@@ -35,8 +34,7 @@ class PTypeFFT(PType):
 
         self.read(inf)
 
-    def read(self,
-             inf=None):
+    def read(self, inf=None):
 
         """
         Read a `FFT` file into an instance of `PTypeFFT`.
@@ -63,12 +61,12 @@ class PTypeFFT(PType):
         # be raised.
 
         if inf is None:
-            inf = Path('{}.inf'.format(bsname))
+            inf = Path("{}.inf".format(bsname))
         else:
             inf = Path(inf)
 
         if not inf.exists():
-            ERROR = 'No corresponding `.inf` file found.'
+            ERROR = "No corresponding `.inf` file found."
             raise OSError(ERROR)
 
         # Read `INF` file into an instance of `PTypeINF`.
@@ -77,16 +75,15 @@ class PTypeFFT(PType):
 
         # Read data from `FFT` file.
 
-        with open(self.fname, 'rb') as infile:
+        with open(str(self.fname), "rb") as infile:
 
-            self.data = np.fromfile(infile,
-                                    dtype='float32')
+            self.data = np.fromfile(infile, dtype="float32")
 
         # Storing some addtional parameters.
 
-        header.inf      = str(inf)
-        header.bsname   = str(bsname)
-        header.fname    = str(self.fname)
+        header.inf = str(inf)
+        header.bsname = str(bsname)
+        header.fname = str(self.fname)
         header.nsamples = self.data.size
 
         # Set all attributes from `INF` file.

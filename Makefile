@@ -33,14 +33,14 @@ clean: ## Remove all python cache and build files
 	rm -rf tmp/
 	rm -rf .pytest_cache/
 	rm -f .coverage
-	
+
 upload_test: ## Upload the distribution source to the TEST PyPI
 	twine upload --repository-url https://test.pypi.org/legacy/ dist/*
 
 upload: ## Upload the distribution source to the REAL PyPI
 	twine upload dist/*
 
-tests: ## Run the unit tests and print a coverage report
+test: ## Run the unit tests and print a coverage report
 	pytest --cov --verbose --cov-report term-missing ${TESTS_DIR}
 
 .PHONY: dist install uninstall help clean upload upload_test tests

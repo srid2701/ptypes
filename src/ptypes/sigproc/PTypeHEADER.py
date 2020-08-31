@@ -3,11 +3,11 @@ import struct
 from pathlib import Path
 
 from ptypes import PType
-from ptypes.consts.misc    import *
+from ptypes.consts.misc import *
 from ptypes.consts.sigproc import *
 
 
-DEFAULT = 'Unknown'
+DEFAULT = "Unknown"
 
 
 class PTypeHEADER(PType):
@@ -20,8 +20,7 @@ class PTypeHEADER(PType):
     Used with most `PTypes` defined in this module.
     """
 
-    def __init__(self,
-                 fname):
+    def __init__(self, fname):
 
         """
         Create an instance of `PTypeHEADER`.
@@ -31,9 +30,7 @@ class PTypeHEADER(PType):
 
         self.read()
 
-    def __readAttr__(self,
-                     fobj,
-                     keys):
+    def __readAttr__(self, fobj, keys):
 
         """
         Private function to read a single attribute
@@ -59,15 +56,14 @@ class PTypeHEADER(PType):
         # `SIGPROC` style header. All keys are
         # of type `int`.
 
-        (ctype,
-         csize) = FORMATCHARS['int']
+        (ctype, csize) = FORMATCHARS["int"]
 
         # Read in the buffer and calculate
         # the number of bytes we need to
         # read to unpack the key string.
 
-        buffer   = fobj.read(csize)
-        bufsize, = struct.unpack(ctype, buffer)
+        buffer = fobj.read(csize)
+        (bufsize,) = struct.unpack(ctype, buffer)
 
         # Unpack and decode the key string.
 
@@ -91,9 +87,11 @@ class PTypeHEADER(PType):
         # exit.
 
         if not btype:
-            ERROR = ('Type of SIGPROC header '
-                     'attribute \'{0:s}\' is '
-                     'unknown, please specify it.')
+            ERROR = (
+                "Type of SIGPROC header "
+                "attribute '{0:s}' is "
+                "unknown, please specify it."
+            )
 
             ERROR = ERROR.format(key)
 
@@ -103,14 +101,12 @@ class PTypeHEADER(PType):
         # and decode these bytes in the same way
         # as the key.
 
-        if btype == 'str':
+        if btype == "str":
 
-            (ctype,
-             csize) = FORMATCHARS['int']
+            (ctype, csize) = FORMATCHARS["int"]
 
-            buffer   = fobj.read(csize)
-            bufsize, = struct.unpack(ctype,
-                                     buffer)
+            buffer = fobj.read(csize)
+            (bufsize,) = struct.unpack(ctype, buffer)
 
             value = fobj.read(bufsize)
             value = value.decode()
@@ -120,26 +116,21 @@ class PTypeHEADER(PType):
         # format character and size, and unpack
         # accordingly.
 
-        elif any([btype == 'int',
-                  btype == 'double']):
+        elif any([btype == "int", btype == "double"]):
 
-            (ctype,
-             csize) = FORMATCHARS[btype]
+            (ctype, csize) = FORMATCHARS[btype]
 
             buffer = fobj.read(csize)
-            value, = struct.unpack(ctype,
-                                   buffer)
+            (value,) = struct.unpack(ctype, buffer)
 
         # Cannot read this key. Raise error
         # and exit.
 
         else:
 
-            ERROR = ('Key \'{0:s}\' has unsupported'
-                     'type \'{1:s}\'. Cannot read it.')
+            ERROR = "Key '{0:s}' has unsupported" "type '{1:s}'. Cannot read it."
 
-            ERROR = ERROR.format(key,
-                                 btype)
+            ERROR = ERROR.format(key, btype)
 
             raise ValueError(ERROR)
 
@@ -167,14 +158,13 @@ class PTypeHEADER(PType):
 
         # Open the file in binary mode.
 
-        with open(self.fname, 'rb') as infile:
+        with open(str(self.fname), "rb") as infile:
 
             # Get format character and size for
             # the start and end flags. They are
             # of type `int`.
 
-            (ctype,
-             csize) = FORMATCHARS['int']
+            (ctype, csize) = FORMATCHARS["int"]
 
             # If not already there, set the seek
             # to the beginning of the file because
@@ -185,22 +175,20 @@ class PTypeHEADER(PType):
             # Read the buffer in and get the
             # size of the string to be read.
 
-            buffer   = infile.read(csize)
-            bufsize, = struct.unpack(ctype,
-                                     buffer)
+            buffer = infile.read(csize)
+            (bufsize,) = struct.unpack(ctype, buffer)
 
             # Unpack and decode the string. If
             # the flag is not the same as the
             # `STARTFLAG`, raise an error and
             # exit immediately.
 
-            FLAG  = str(infile.read(bufsize).decode())
-            ERROR = ('File starts with \'{0:s}\' '
-                     'flag instead of the expected '
-                     '\'{1:s}\'.')
+            FLAG = str(infile.read(bufsize).decode())
+            ERROR = (
+                "File starts with '{0:s}' " "flag instead of the expected " "'{1:s}'."
+            )
 
-            ERROR = ERROR.format(FLAG,
-                                 STARTFLAG)
+            ERROR = ERROR.format(FLAG, STARTFLAG)
 
             if not (FLAG == STARTFLAG):
                 raise ValueError(ERROR)
@@ -211,16 +199,12 @@ class PTypeHEADER(PType):
 
             while True:
 
-                (key,
-                 value) = self.__readAttr__(infile,
-                                            keys)
+                (key, value) = self.__readAttr__(infile, keys)
 
                 if key == ENDFLAG:
                     break
 
-                setattr(self,
-                        key,
-                        value)
+                setattr(self, key, value)
 
             # Set some additional parameters, such
             # as header size, telescope and machine
@@ -233,20 +217,18 @@ class PTypeHEADER(PType):
             DTYPES = DATATYPES
 
             self.telescope = IDTELE.get(self.telescope_id, DEFAULT)
-            self.machine   = IDMACH.get(self.machine_id, DEFAULT)
-            self.dtype     = DTYPES.get(self.data_type, DEFAULT)
+            self.machine = IDMACH.get(self.machine_id, DEFAULT)
+            self.dtype = DTYPES.get(self.data_type, DEFAULT)
 
-    def write(self,
-              fname):
+    def write(self, fname):
 
-        """
-        """
+        """"""
 
         keys = SIGPROCKEYS
 
-        with open(fname, 'wb+') as infile:
+        with open(fname, "wb+") as infile:
 
-            fsize = struct.pack('i', len(STARTFLAG))
+            fsize = struct.pack("i", len(STARTFLAG))
             fstrg = STARTFLAG.encode()
 
             infile.write(fsize)
@@ -254,8 +236,7 @@ class PTypeHEADER(PType):
 
             for key in keys:
 
-                (ctype,
-                 csize) = FORMATCHARS['int']
+                (ctype, csize) = FORMATCHARS["int"]
 
                 try:
                     value = getattr(self, key)
@@ -272,8 +253,7 @@ class PTypeHEADER(PType):
 
                 if ktype == str:
 
-                    (ctype,
-                     csize) = FORMATCHARS['int']
+                    (ctype, csize) = FORMATCHARS["int"]
 
                     vsize = struct.pack(ctype, len(value))
                     vstrg = value.encode()
@@ -283,8 +263,7 @@ class PTypeHEADER(PType):
 
                 elif ktype == int:
 
-                    (ctype,
-                     csize) = FORMATCHARS['int']
+                    (ctype, csize) = FORMATCHARS["int"]
 
                     vbytes = struct.pack(ctype, value)
 
@@ -292,14 +271,13 @@ class PTypeHEADER(PType):
 
                 elif ktype == float:
 
-                    (ctype,
-                     csize) = FORMATCHARS['double']
+                    (ctype, csize) = FORMATCHARS["double"]
 
                     vbytes = struct.pack(ctype, value)
 
                     infile.write(vbytes)
 
-            fsize = struct.pack('i', len(ENDFLAG))
+            fsize = struct.pack("i", len(ENDFLAG))
             fstrg = ENDFLAG.encode()
 
             infile.write(fsize)

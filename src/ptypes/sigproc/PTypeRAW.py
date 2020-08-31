@@ -6,16 +6,14 @@ from pathlib import Path
 from ptypes import PType
 from ptypes.consts.sigproc import *
 
+
 class PTypeRAW(PType):
 
-    """
-    """
+    """"""
 
-    def __init__(self,
-                 fname):
+    def __init__(self, fname):
 
-        """
-        """
+        """"""
 
         super().__init__(fname)
 
@@ -23,7 +21,6 @@ class PTypeRAW(PType):
 
     def read(self):
 
-        """
-        """
+        """"""
 
         pass

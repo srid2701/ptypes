@@ -5,33 +5,32 @@ from ptypes.consts import TWOPI
 
 def unpack2bit(data):
 
-    """
-    """
+    """"""
 
-    pieces = [np.bitwise_and(data >> 0x06, 0x03),
-              np.bitwise_and(data >> 0x04, 0x03),
-              np.bitwise_and(data >> 0x02, 0x03),
-              np.bitwise_and(data >> 0x03)]
+    pieces = [
+        np.bitwise_and(data >> 0x06, 0x03),
+        np.bitwise_and(data >> 0x04, 0x03),
+        np.bitwise_and(data >> 0x02, 0x03),
+        np.bitwise_and(data >> 0x03),
+    ]
 
     bits = np.dstack(pieces).flatten()
 
     return bits
+
 
 def unpack4bit(data):
 
-    """
-    """
+    """"""
 
-    pieces = [np.bitwise_and(0x04, 0x0F),
-              np.bitwise_and(0x0F)]
+    pieces = [np.bitwise_and(0x04, 0x0F), np.bitwise_and(0x0F)]
 
     bits = np.dstack(pieces).flatten()
 
     return bits
 
-def PtoF(P,
-         PD,
-         PDD):
+
+def PtoF(P, PD, PDD):
 
     """
     Convert the pulsar period, period derivative and period
@@ -39,30 +38,23 @@ def PtoF(P,
     vice versa. Works because P = 1/F.
     """
 
-    F  = 1.0 / P
+    F = 1.0 / P
     FD = -PD / (P * P)
 
     if PDD is None:
-        return [F,
-                FD]
+        return [F, FD]
 
     else:
 
         if PDD is 0.0:
             FDD = 0.0
         else:
-            FDD = (2.0
-                   * (PD * PD)
-                   / (P ** 3.0)
-                   - PDD
-                   / (P * P))
+            FDD = 2.0 * (PD * PD) / (P ** 3.0) - PDD / (P * P)
 
-        return [F,
-                FD,
-                FDD]
+        return [F, FD, FDD]
 
-def doppler(OBSFREQ,
-            VOVERC):
+
+def doppler(OBSFREQ, VOVERC):
 
     """
     This routine returns the frequency emitted by a
@@ -72,13 +64,13 @@ def doppler(OBSFREQ,
     respect to the pulsar.
     """
 
-    FACTOR    = (1.0 + VOVERC)
+    FACTOR = 1.0 + VOVERC
     SHIFTFREQ = OBSFREQ * FACTOR
 
     return SHIFTFREQ
 
-def delays(DM,
-           EMITFREQ):
+
+def delays(DM, EMITFREQ):
 
     """
     Return the delay in seconds caused by dispersion,
@@ -92,9 +84,7 @@ def delays(DM,
     if type(EMITFREQ) is float:
         if EMITFREQ > 0.0:
 
-            DELAY = (DM
-                     / (FACTOR
-                        * (EMITFREQ ** 2)))
+            DELAY = DM / (FACTOR * (EMITFREQ ** 2))
 
             return DELAY
 
@@ -105,16 +95,12 @@ def delays(DM,
 
     else:
 
-        DELAY = (DM
-                 / (FACTOR
-                    * (EMITFREQ ** 2)))
+        DELAY = DM / (FACTOR * (EMITFREQ ** 2))
 
-        return np.where(EMITFREQ > 0.0,
-                        DELAY,
-                        0.0)
+        return np.where(EMITFREQ > 0.0, DELAY, 0.0)
 
-def FFTrotate(array,
-              nbins):
+
+def FFTrotate(array, nbins):
 
     """
     Return 'array' rotated by 'nbins' places to the
@@ -144,17 +130,11 @@ def FFTrotate(array,
     """
 
     array = np.asarray(array)
-    freqs = np.arange(array.size / 2 + 1,
-                      dtype=np.float)
+    freqs = np.arange(array.size / 2 + 1, dtype=np.float)
 
     iTWOPI = complex(0.0, TWOPI)
-    phasor = np.exp(iTWOPI
-                    * freqs
-                    * nbins
-                    / float(array.size))
+    phasor = np.exp(iTWOPI * freqs * nbins / float(array.size))
 
-    sarray = np.fft.irfft((phasor
-                           * np.fft.rfft(array)),
-                          array.size)
+    sarray = np.fft.irfft((phasor * np.fft.rfft(array)), array.size)
 
     return sarray

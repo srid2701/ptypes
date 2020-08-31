@@ -10,21 +10,16 @@ from ptypes.consts.sigproc import *
 from .PTypeHEADER import PTypeHEADER
 
 
-ALLOWED = [8,
-           16,
-           32]
+ALLOWED = [8, 16, 32]
 
 
 class PTypeFIL(PType):
 
-    """
-    """
+    """"""
 
-    def __init__(self,
-                 fname):
+    def __init__(self, fname):
 
-        """
-        """
+        """"""
 
         super().__init__(fname)
 
@@ -33,99 +28,83 @@ class PTypeFIL(PType):
         for key, value in header.__dict__.items():
             setattr(self, key, value)
 
-        self.freqs = (self.fch1
-                      + self.foff
-                      * np.arange(self.nchans))
+        self.freqs = self.fch1 + self.foff * np.arange(self.nchans)
 
-        self.bytespec = (self.nchans
-                         * self.nbits
-                         // 8)
+        self.bytespec = self.nchans * self.nbits // 8
 
-        self.filsize = os.path.getsize(self.fname)
+        self.filsize = os.path.getsize(str(self.fname))
         self.datsize = self.filsize - self.hdrsize
-        self.nspec   = self.datsize // self.bytespec
+        self.nspec = self.datsize // self.bytespec
 
         NBITS = self.nbits
 
         if NBITS not in ALLOWED:
 
-            ERRMSG = ('Can only read 8- or 16- bit '
-                      'integers, or 32-bit floats. '
-                      'The number of bits provided is {}')
+            ERRMSG = (
+                "Can only read 8- or 16- bit "
+                "integers, or 32-bit floats. "
+                "The number of bits provided is {}"
+            )
 
             raise ValueError(ERRMSG.format(NBITS))
 
         else:
 
             if NBITS != 32:
-                DTYPE = ('uint{:d}'
-                         .format(NBITS))
+                DTYPE = "uint{:d}".format(NBITS)
                 TINFO = np.iinfo(DTYPE)
             else:
-                DTYPE = ('float{:d}'
-                         .format(NBITS))
+                DTYPE = "float{:d}".format(NBITS)
                 TINFO = np.finfo(DTYPE)
 
-        self.dtype    = DTYPE
+        self.dtype = DTYPE
         self.dtypeMIN = TINFO.min
         self.dtypeMAX = TINFO.max
 
-    def freqslice(self,
-                  START,
-                  ISPEC):
+    def freqslice(self, START, ISPEC):
 
-        """
-        """
+        """"""
 
-        with open(self.fname, 'rb') as infile:
+        with open(str(self.fname), "rb") as infile:
 
-            FREQs  = self.freqs
-            TSAMP  = self.tsamp
+            FREQs = self.freqs
+            TSAMP = self.tsamp
             NSPECs = self.nspec
             NCHANs = self.nchans
-            BYTEs  = self.bytespec
+            BYTEs = self.bytespec
 
-            STARTT = (START * TSAMP)
+            STARTT = START * TSAMP
 
-            WHERE = (START + ISPEC)
-            STOP  = min(WHERE, NSPECs)
-            POS   = self.hdrsize + (START * BYTEs)
+            WHERE = START + ISPEC
+            STOP = min(WHERE, NSPECs)
+            POS = self.hdrsize + (START * BYTEs)
 
             NSPEC = int(STOP) - int(START)
             NREAD = NSPEC * NCHANs
             NREAD = max(0, NREAD)
 
-            infile.seek(POS,
-                        os.SEEK_SET)
+            infile.seek(POS, os.SEEK_SET)
 
-            DATA = np.fromfile(infile,
-                               count=NREAD,
-                               dtype=self.dtype)
+            DATA = np.fromfile(infile, count=NREAD, dtype=self.dtype)
 
             DATA.shape = (NSPEC, NCHANs)
 
-            SPECTRA = Spectra(FREQs,
-                              TSAMP,
-                              DATA.T,
-                              startT=STARTT)
+            SPECTRA = Spectra(FREQs, TSAMP, DATA.T, startT=STARTT)
 
             return SPECTRA
 
-    def timeslice(self,
-                  START,
-                  STOP):
+    def timeslice(self, START, STOP):
 
-        """
-        """
+        """"""
 
-        with open(self.fname, 'rb') as infile:
+        with open(str(self.fname), "rb") as infile:
 
             TSAMP = self.tsamp
 
-            START = int(np.round(START/TSAMP))
-            STOP  = int(np.round(STOP/TSAMP))
+            START = int(np.round(START / TSAMP))
+            STOP = int(np.round(STOP / TSAMP))
 
-            NSPECs = (STOP - START)
+            NSPECs = STOP - START
 
             SPECTRA = self.freqslice(START, NSPECs)
 

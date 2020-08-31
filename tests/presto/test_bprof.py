@@ -10,8 +10,7 @@ def test_read(datadir):
     Test reading in a `BESTPROF` file using `PTypeBESTPROF`.
     """
 
-    testpath = Path.joinpath(datadir,
-                             'test.pfd.bestprof')
+    testpath = Path.joinpath(datadir, "test.pfd.bestprof")
 
     bprof = PTypeBESTPROF(testpath)
 
@@ -27,15 +26,10 @@ def test_read(datadir):
 
     assert bprof.nbins == 64
 
-    assert bprof.fname == ('fake_noise'
-                           '.4096ch'
-                           '.8bit'
-                           '.J2144-3933'
-                           '_DC1'
-                           '.fil')
+    assert bprof.fname == ("fake_noise" ".4096ch" ".8bit" ".J2144-3933" "_DC1" ".fil")
 
-    assert bprof.telescope == 'GMRT'
-    assert bprof.candname  == 'PSR_2144-3933'
+    assert bprof.telescope == "GMRT"
+    assert bprof.candname == "PSR_2144-3933"
 
     assert pytest.approx(bprof.dm, 2.885)
     assert pytest.approx(bprof.pdtopo, -0.0)

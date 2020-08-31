@@ -1,14 +1,13 @@
 from ptypes import PType
 
-ERRKW = '_ERR'
+ERRKW = "_ERR"
+
 
 class PTypePAR(PType):
 
-    """
-    """
+    """"""
 
-    def __init__(self,
-                 fname):
+    def __init__(self, fname):
 
         """
         Create a `PTypePAR` instance.
@@ -26,7 +25,7 @@ class PTypePAR(PType):
         Read a `PAR` file into an instance of `PTypePAR`.
         """
 
-        with open(self.fname, 'r') as lines:
+        with open(str(self.fname), "r") as lines:
 
             # Iterate through all the lines
             # in the `PAR` file.
@@ -46,8 +45,7 @@ class PTypePAR(PType):
 
                     # Get (key, value) pair.
 
-                    [key,
-                     values] = cuts
+                    [key, values] = cuts
 
                     # Split value. This helps
                     # us get the error, if it
@@ -70,8 +68,7 @@ class PTypePAR(PType):
                         # a `ERR` keyword attached
                         # at the end.
 
-                        err = ''.join([key,
-                                       ERRKW])
+                        err = "".join([key, ERRKW])
 
                         setattr(self, err, values[-1])
 
@@ -88,18 +85,11 @@ class PTypePAR(PType):
         # since they were always meant to be
         # strings.
 
-        STRKEYS = ['fname',
-                   'PSRJ',
-                   'NAME',
-                   'SURVEY',
-                   'OSURVEY',
-                   'UNITS']
+        STRKEYS = ["fname", "PSRJ", "NAME", "SURVEY", "OSURVEY", "UNITS"]
 
         # Iterate through all attributes.
 
-        for key, value in (self
-                           .__dict__
-                           .items()):
+        for key, value in self.__dict__.items():
 
             # If the key is not meant
             # to be a string, convert
@@ -113,13 +103,13 @@ class PTypePAR(PType):
                 # value. Let it remain as a
                 # string.
 
-                if value.find(':') != -1:
+                if value.find(":") != -1:
                     pass
 
                 # If the value has a decimal
                 # in it, convert it to float.
 
-                elif value.find('.') != -1:
+                elif value.find(".") != -1:
                     value = float(value)
 
                 # If all else fails, it is must
@@ -131,9 +121,7 @@ class PTypePAR(PType):
 
                 # Reset the attribute.
 
-                setattr(self,
-                        key,
-                        value)
+                setattr(self, key, value)
 
     def procs(self):
 

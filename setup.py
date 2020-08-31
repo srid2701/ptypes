@@ -5,45 +5,35 @@ from setuptools import setup, find_packages
 
 here = pathlib.Path(__file__).parent.resolve()
 
-long_description = (here / 'README.md').read_text(encoding='utf-8')
+long_description = (here / "README.md").read_text(encoding="utf-8")
 
-install_requires = ['numpy',
-                    'scipy',
-                    'astropy']
+install_requires = ["numpy", "scipy", "pytest", "astropy", "pytest-cov"]
 
 setup(
-    name='pulsartypes',
+    name="pulsartypes",
     version=versioneer.get_version(),
-    description='Like ctypes, but for pulsars.',
+    description="Like ctypes, but for pulsars.",
     long_description=long_description,
-    long_description_content_type='text/markdown',
-    url='https://github.com/astrogewgaw/ptypes',
-    author='Ujjwal Panda',
-    author_email='ujjwalpanda97@gmail.com',
-
+    long_description_content_type="text/markdown",
+    url="https://github.com/astrogewgaw/ptypes",
+    author="Ujjwal Panda",
+    author_email="ujjwalpanda97@gmail.com",
     classifiers=[
-        'License :: OSI Approved :: MIT License',
-        'Programming Language :: Python :: 3.7',
-        'Programming Language :: Python :: 3.8',
-        'Topic :: Scientific/Engineering :: Astronomy'
+        "License :: OSI Approved :: MIT License",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+        "Topic :: Scientific/Engineering :: Astronomy",
     ],
-
-    keywords = ('pulsars, '
-                'data types, '
-                'readers'),
-
-    package_dir={'': 'src'},
-    packages=find_packages(where='src'),
+    keywords=("pulsars, " "data types, " "readers"),
+    package_dir={"": "src"},
+    packages=find_packages(where="src"),
     install_package_data=True,
-
-    python_requires='>=3.5, <4',
+    python_requires=">=3.5, <4",
     install_requires=install_requires,
-
     project_urls={
-        'Source': 'https://github.com/astrogewgaw/ptypes',
-        'Bug Reports': 'https://github.com/astrogewgaw/ptypes/issues',
+        "Source": "https://github.com/astrogewgaw/ptypes",
+        "Bug Reports": "https://github.com/astrogewgaw/ptypes/issues",
     },
-
     cmd_class=versioneer.get_cmdclass(),
     zip_safe=False,
 )

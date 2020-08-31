@@ -23,8 +23,7 @@ class PTypeTIM(PType):
     rest of the package.
     """
 
-    def __init__(self,
-                 fname):
+    def __init__(self, fname):
 
         """
         Create an instance of `PTypeTIM`.
@@ -44,7 +43,7 @@ class PTypeTIM(PType):
 
         header = PTypeHEADER(self.fname)
 
-        with open(self.fname, 'rb') as infile:
+        with open(str(self.fname), "rb") as infile:
 
             # Get the size of the header.
 
@@ -54,11 +53,10 @@ class PTypeTIM(PType):
             # Get the `dtype` according
             # to the number of bits.
 
-            self.nbits = header['nbits']
+            self.nbits = header["nbits"]
             self.dtype = NBITStoDTYPE[self.nbits]
-            self.data  = np.fromfile(infile,
-                                     dtype=self.dtype)
-            self.data  = self.data.astype('float32')
+            self.data = np.fromfile(infile, dtype=self.dtype)
+            self.data = self.data.astype("float32")
 
         # Set all attributes from header.
 

@@ -10,7 +10,7 @@ def test_read(datadir):
     Test reading in a `FIL` file using `PTypeFIL`.
     """
 
-    testpath = Path.joinpath(datadir, 'test.fil')
+    testpath = Path.joinpath(datadir, "test.fil")
 
     fil = PTypeFIL(testpath)
 
