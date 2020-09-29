@@ -50,17 +50,17 @@ PFDStruct = Struct(
     "chanwidth" / Float64l,
     "bestdm" / Float64l,
     "topopow" / Float32l,
-    Float32l,
+    "_t" / Float32l,
     "topop1" / Float64l,
     "topop2" / Float64l,
     "topop3" / Float64l,
     "barypow" / Float32l,
-    Float32l,
+    "_b" / Float32l,
     "baryp1" / Float64l,
     "baryp2" / Float64l,
     "baryp3" / Float64l,
     "foldpow" / Float32l,
-    Float32l,
+    "_f" / Float32l,
     "foldp1" / Float64l,
     "foldp2" / Float64l,
     "foldp3" / Float64l,
@@ -100,6 +100,15 @@ class PTypePFD(PType):
             con = PFDStruct.parse_stream(infile)
 
         self._fromcon(con)
+
+    def write(self, fname: str) -> None:
+
+        """"""
+
+        binary = PFDStruct.build(self.__dict__)
+
+        with open(fname, "wb") as outfile:
+            outfile.write(binary)
 
     def _fromcon(
         self,

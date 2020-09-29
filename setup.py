@@ -7,7 +7,7 @@ here = pathlib.Path(__file__).parent.resolve()
 
 long_description = (here / "README.md").read_text(encoding="utf-8")
 
-install_requires = ["numpy", "scipy", "pytest", "astropy", "pytest-cov"]
+install_requires = ["numpy", "scipy", "construct", "pytest", "astropy", "pytest-cov"]
 
 setup(
     name="pulsartypes",
