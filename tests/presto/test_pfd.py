@@ -97,18 +97,6 @@ def test_read(datadir):
 
     assert pfdobj.profs.shape == (60, 128, 64)
 
-    assert pytest.approx(pfdobj.secBINS, 7.520743163677269)
-    assert pytest.approx(pfdobj.subCHANS, 32)
-    assert pytest.approx(pfdobj.subDFREQ, 1.562496)
-    assert pytest.approx(pfdobj.hifreq, 499.97558599999996)
-    assert pytest.approx(pfdobj.subLFREQ, 301.538594)
-
-    assert pfdobj.subFREQS.shape == (128,)
-    assert pfdobj.subDBINS.shape == (128,)
-    assert pfdobj.pointsPERFOLD.shape == (60,)
-    assert pfdobj.startSECS.shape == (60,)
-    assert pfdobj.midSECS.shape == (60,)
-
 
 def test_write(datadir, tmp_path):
 
