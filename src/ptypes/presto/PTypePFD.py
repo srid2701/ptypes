@@ -100,9 +100,11 @@ class PTypePFD(PType):
             con = PFDStruct.parse_stream(infile)
 
         self._fromcon(con)
-        self._calculate()
 
-    def _fromcon(self, con: typing.MutableMapping) -> None:
+    def _fromcon(
+        self,
+        con: typing.MutableMapping,
+    ) -> None:
 
         del con["_io"]
 
@@ -114,15 +116,3 @@ class PTypePFD(PType):
 
         for key, value in con.items():
             setattr(self, key, value)
-
-    def _calculate(self) -> None:
-
-        """"""
-
-        pass
-
-    def dedisperse(self) -> None:
-
-        """"""
-
-        pass
