@@ -44,6 +44,19 @@ class Metadata(dict):
             if isinstance(sch.schema, str):
                 self.setdefault(sch.schema, None)
 
+        self._classlike()
+
+    def _classlike(self) -> None:
+
+        """"""
+
+        for key, val in self.items():
+            setattr(
+                self,
+                key,
+                val,
+            )
+
     @classmethod
     def frominf(
         cls: typing.Type[M],
@@ -79,11 +92,15 @@ class Metadata(dict):
 
         """"""
 
-        d["coords"] = SkyCoord(
-            d["raj"],
-            d["decj"],
-            unit=(uu.hour, uu.degree),
-        )
+        try:
+            d["coords"] = SkyCoord(
+                d["raj"],
+                d["decj"],
+                unit=(uu.hour, uu.degree),
+                frame="icrs",
+            )
+        except KeyError:
+            pass
 
         return cls(d)
 

@@ -1,5 +1,6 @@
 import attr
 import typing
+import numpy as np  # type: ignore
 
 from construct import (  # type: ignore
     this,
@@ -138,6 +139,17 @@ sigstruct = Struct(
 )
 
 
+def fltcrd(f: float) -> float:
+
+    """"""
+
+    sign = np.sign(f)
+    x = abs(f)
+    hh, x = divmod(x, 10000.0)
+    mm, ss = divmod(x, 100.0)
+    return sign * (hh + mm / 60.0 + ss / 3600.0)
+
+
 def sigread(f: str) -> typing.Dict[str, typing.Any]:
 
     """"""
@@ -149,6 +161,13 @@ def sigread(f: str) -> typing.Dict[str, typing.Any]:
     items = con["items"]
     for item in items:
         d[item["key"]] = item["value"]
+
+    try:
+        d["raj"] = fltcrd(d["src_raj"])
+        d["decj"] = fltcrd(d["src_dej"])
+    except KeyError:
+        pass
+
     return d
 
 
@@ -168,10 +187,12 @@ def sigwrite(
 
     keycons = []
     for key, val in d.items():
-        con = Container()
-        con["key"] = key
-        con["value"] = val
-        keycons.append(con)
+        if key in sigkeys.keys():
+            con = Container()
+            con["key"] = key
+            con["value"] = val
+            keycons.append(con)
+
     mcon = ListContainer()
     mcon.extend(keycons)
 
