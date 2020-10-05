@@ -156,7 +156,9 @@ def sigread(f: str) -> typing.Dict[str, typing.Any]:
 
     d = {}
 
-    con = sigstruct.parse_file(f)
+    with open(f, "rb") as fobj:
+        con = sigstruct.parse_stream(fobj)
+        size = fobj.tell()
 
     items = con["items"]
     for item in items:
@@ -167,6 +169,8 @@ def sigread(f: str) -> typing.Dict[str, typing.Any]:
         d["decj"] = fltcrd(d["src_dej"])
     except KeyError:
         pass
+
+    d["size"] = size
 
     return d
 

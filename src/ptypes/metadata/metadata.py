@@ -13,8 +13,12 @@ from pathlib import Path
 from astropy import units as uu  # type: ignore
 from astropy.coordinates import SkyCoord  # type: ignore
 
-from .formats.inf import infread, infwrite
-from .formats.sigproc import sigread, sigwrite
+from .formats import (
+    infread,
+    infwrite,
+    sigread,
+    sigwrite,
+)
 
 
 M = typing.TypeVar("M", bound="Metadata")
