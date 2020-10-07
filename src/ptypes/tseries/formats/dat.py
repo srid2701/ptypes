@@ -15,7 +15,7 @@ def datread(f: str) -> typing.Tuple[Metadata, np.ndarray]:
         msg = "No corresponding *.inf file found. Exiting..."
         raise OSError(msg)
 
-    meta = Metadata.frominf(inf)
+    meta = Metadata.frominf(str(inf))
 
     with open(f, "rb") as fobj:
         data = np.fromfile(
@@ -26,8 +26,20 @@ def datread(f: str) -> typing.Tuple[Metadata, np.ndarray]:
     return meta, data
 
 
-def datwrite(f: str) -> None:
+def datwrite(
+    data: np.ndarray,
+    meta: Metadata,
+    f: typing.Optional[str] = None,
+) -> None:
 
     """"""
 
-    pass
+    inf = meta["fname"]
+
+    if not f:
+        f = str(Path(inf).with_suffix(".dat"))
+
+    meta.toinf(str(inf))
+
+    with open(f, "wb+") as fobj:
+        data.tofile(fobj)

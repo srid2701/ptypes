@@ -26,7 +26,7 @@ M = typing.TypeVar("M", bound="Metadata")
 
 schs = {
     Optional("source_name"): Or(str, None),
-    Optional("skycoord"): Or(SkyCoord, None),
+    Optional("coords"): Or(SkyCoord, None),
     Optional("dm"): Or(And(float, lambda x: x >= 0), None),
     Optional("mjd"): Or(And(float, lambda x: x >= 0), None),
     Optional("tobs"): Or(And(float, lambda x: x > 0), None),

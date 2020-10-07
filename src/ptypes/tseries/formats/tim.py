@@ -22,22 +22,20 @@ def timread(f: str) -> typing.Tuple[Metadata, np.ndarray]:
     meta = Metadata.fromhdr(f)
 
     with open(f, "rb") as fobj:
-        fobj.seek(meta.size)
-        nbits = meta.nbits
-        dtype = bits2dtypes[nbits]
+        fobj.seek(meta["size"])
+        nbits = meta.get("nbits", None)
 
-        data = np.fromfile(
-            f,
-            dtype=dtype,
-        )
-
-        data = data.astype("float32")
+        if nbits:
+            dtype = bits2dtypes[nbits]
+            data = np.fromfile(
+                f,
+                dtype=dtype,
+            )
+            # data = data.astype(np.float32)
+        else:
+            data = np.fromfile(
+                f,
+                dtype=np.float32,
+            )
 
     return meta, data
-
-
-def timwrite(f: str) -> None:
-
-    """"""
-
-    pass
