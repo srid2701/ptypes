@@ -120,6 +120,8 @@ def infwrite(
         bsname = d["bsname"]
         default = "".join([bsname, ".inf"])
         fname = d.get("fname", default)
+    else:
+        fname = f
 
     text = inftemplate.format(
         bsname=d["bsname"],

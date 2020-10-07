@@ -15,9 +15,7 @@ from construct import (  # type: ignore
     Float64l,
     Float64b,
     Container,
-    GreedyRange,
     PascalString,
-    ListContainer,
 )
 
 telids = {
@@ -133,10 +131,8 @@ keystruct = Struct(
     ),
 )
 
-
-sigstruct = Struct(
-    "items" / GreedyRange(keystruct),
-)
+sflag = PascalString(Int32ul, "utf8")
+eflag = PascalString(Int32ul, "utf8")
 
 
 def fltcrd(f: float) -> float:
@@ -154,15 +150,17 @@ def sigread(f: str) -> typing.Dict[str, typing.Any]:
 
     """"""
 
-    d = {}
-
+    cons = []
     with open(f, "rb") as fobj:
-        con = sigstruct.parse_stream(fobj)
+        sflag.parse_stream(fobj)
+        while True:
+            con = keystruct.parse_stream(fobj)
+            if con.key == "HEADER_END":
+                break
+            cons.append(con)
         size = fobj.tell()
 
-    items = con["items"]
-    for item in items:
-        d[item["key"]] = item["value"]
+    d = {con.key: con.value for con in cons}
 
     try:
         d["raj"] = fltcrd(d["src_raj"])
@@ -184,23 +182,17 @@ def sigwrite(
 
     if not f:
         try:
-            f = d["fname"]
+            f = str(d["fname"])
         except KeyError as err:
             msg = "Cannot write the header without a file name. Exiting..."
             raise err(msg)  # type: ignore
 
-    keycons = []
-    for key, val in d.items():
-        if key in sigkeys.keys():
-            con = Container()
-            con["key"] = key
-            con["value"] = val
-            keycons.append(con)
-
-    mcon = ListContainer()
-    mcon.extend(keycons)
-
-    fcon = Container()
-    fcon["items"] = mcon
-
-    sigstruct.build_file(fcon, f)
+    with open(f, "wb+") as fobj:
+        sflag.build_stream("HEADER_START", fobj)
+        for key, val in d.items():
+            if key in sigkeys.keys():
+                con = Container()
+                con["key"] = key
+                con["value"] = val if val else "Unknown"
+                keystruct.build_stream(con, fobj)
+        eflag.build_stream("HEADER_END", fobj)
