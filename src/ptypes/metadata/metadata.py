@@ -24,16 +24,11 @@ from .formats import (
 M = typing.TypeVar("M", bound="Metadata")
 
 
-schs = {
-    Optional("source_name"): Or(str, None),
-    Optional("coords"): Or(SkyCoord, None),
-    Optional("dm"): Or(And(float, lambda x: x >= 0), None),
-    Optional("mjd"): Or(And(float, lambda x: x >= 0), None),
-    Optional("tobs"): Or(And(float, lambda x: x > 0), None),
-    Optional("fname"): Or(str, None),
-}
+class NoMeta(Exception):
 
-metama = Schema(schs, ignore_extra_keys=True)
+    """"""
+
+    pass
 
 
 class Metadata(dict):
@@ -41,18 +36,7 @@ class Metadata(dict):
     """"""
 
     def __init__(self, items: typing.Dict = {}):
-        metama.validate(items)
         super(Metadata, self).__init__(items)
-
-        for sch in schs:
-            if isinstance(sch.schema, str):
-                self.setdefault(sch.schema, None)
-
-        self._classlike()
-
-    def _classlike(self) -> None:
-
-        """"""
 
         for key, val in self.items():
             setattr(
@@ -60,6 +44,23 @@ class Metadata(dict):
                 key,
                 val,
             )
+
+    @property
+    def coords(self) -> SkyCoord:
+
+        """"""
+
+        try:
+            coords = SkyCoord(
+                self["raj"],
+                self["decj"],
+                unit=(uu.hour, uu.degree),
+                frame="icrs",
+            )
+        except KeyError:
+            pass
+
+        return coords
 
     @classmethod
     def frominf(
@@ -96,16 +97,6 @@ class Metadata(dict):
 
         """"""
 
-        try:
-            d["coords"] = SkyCoord(
-                d["raj"],
-                d["decj"],
-                unit=(uu.hour, uu.degree),
-                frame="icrs",
-            )
-        except KeyError:
-            pass
-
         return cls(d)
 
     def toinf(
@@ -120,7 +111,7 @@ class Metadata(dict):
 
     def tohdr(
         self,
-        f: typing.Optional[str],
+        f: str,
     ) -> None:
 
         """"""

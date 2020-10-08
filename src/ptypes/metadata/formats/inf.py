@@ -117,9 +117,13 @@ def infwrite(
     """"""
 
     if not f:
-        bsname = d["bsname"]
-        default = "".join([bsname, ".inf"])
-        fname = d.get("fname", default)
+        bsname = d.get("bsname")
+        if bsname:
+            default = "".join([bsname, ".inf"])
+            fname = d.get("fname", default)
+        else:
+            msg = "Cannot find any file to put the metadata in. Exiting..."
+            raise OSError(msg)
     else:
         fname = f
 

@@ -1,3 +1,9 @@
-from .metadata import Metadata
+from .metadata import (
+    NoMeta,
+    Metadata,
+)
 
-__all__ = ["Metadata"]
+__all__ = [
+    "NoMeta",
+    "Metadata",
+]

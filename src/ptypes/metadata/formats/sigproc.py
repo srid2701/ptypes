@@ -4,6 +4,7 @@ import numpy as np  # type: ignore
 
 from construct import (  # type: ignore
     this,
+    Const,
     Switch,
     Struct,
     Int8ul,
@@ -131,8 +132,15 @@ keystruct = Struct(
     ),
 )
 
-sflag = PascalString(Int32ul, "utf8")
-eflag = PascalString(Int32ul, "utf8")
+sflag = Const(
+    "HEADER_START",
+    PascalString(Int32ul, "utf8"),
+)
+
+eflag = Const(
+    "HEADER_END",
+    PascalString(Int32ul, "utf8"),
+)
 
 
 def fltcrd(f: float) -> float:
@@ -151,13 +159,17 @@ def sigread(f: str) -> typing.Dict[str, typing.Any]:
     """"""
 
     cons = []
+
     with open(f, "rb") as fobj:
+
         sflag.parse_stream(fobj)
+
         while True:
             con = keystruct.parse_stream(fobj)
             if con.key == "HEADER_END":
                 break
             cons.append(con)
+
         size = fobj.tell()
 
     d = {con.key: con.value for con in cons}
@@ -175,24 +187,21 @@ def sigread(f: str) -> typing.Dict[str, typing.Any]:
 
 def sigwrite(
     d: typing.Dict[str, typing.Any],
-    f: typing.Optional[str] = None,
+    f: str,
 ) -> None:
 
     """"""
 
-    if not f:
-        try:
-            f = str(d["fname"])
-        except KeyError as err:
-            msg = "Cannot write the header without a file name. Exiting..."
-            raise err(msg)  # type: ignore
-
     with open(f, "wb+") as fobj:
-        sflag.build_stream("HEADER_START", fobj)
+
+        sflag.build_stream(None, fobj)
+
         for key, val in d.items():
             if key in sigkeys.keys():
                 con = Container()
                 con["key"] = key
-                con["value"] = val if val else "Unknown"
+                con["value"] = val
+                print(con)
                 keystruct.build_stream(con, fobj)
-        eflag.build_stream("HEADER_END", fobj)
+
+        eflag.build_stream(None, fobj)

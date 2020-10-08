@@ -4,7 +4,10 @@ import typing
 import numpy as np  # type: ignore
 
 from pathlib import Path
-from ptypes.metadata import Metadata
+from ptypes.metadata import (
+    NoMeta,
+    Metadata,
+)
 
 from .formats import (
     datread,
@@ -15,13 +18,6 @@ from .formats import (
 
 
 T = typing.TypeVar("T", bound="TimeSeries")
-
-
-class NoMeta(Exception):
-
-    """"""
-
-    pass
 
 
 def downsamp(
@@ -348,7 +344,7 @@ class TimeSeries(object):
 
     def totim(
         self,
-        f: typing.Optional[str] = None,
+        f: str,
     ) -> None:
 
         """"""
