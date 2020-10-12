@@ -356,7 +356,13 @@ class TimeSeries(object):
                 f,
             )
         else:
-            raise NoMeta("Metadata absent. Cannot write to a *.tim file. Exiting...")
+            raise NoMeta(
+                """
+                Metadata absent.
+                Cannot write to a *.tim file.
+                Exiting...
+                """
+            )
 
     def tonpy(self) -> None:
         pass
