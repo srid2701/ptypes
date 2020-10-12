@@ -4,6 +4,9 @@ import numpy as np  # type: ignore
 
 from pathlib import Path
 
+# TODO: Write the FreqXTime class.
+# QUESTION: What functions should we add to the processing part?
+
 
 @attr.s(auto_attribs=True)
 class FreqXTime(object):
