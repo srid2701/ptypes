@@ -3,7 +3,10 @@ import typing
 import numpy as np  # type: ignore
 
 from pathlib import Path
-from ptypes.metadata import Metadata
+from ptypes.metadata import (
+    NoMeta,
+    Metadata,
+)
 
 from .formats import (
     fftread,
@@ -13,25 +16,124 @@ from .formats import (
 )
 
 
+F = typing.TypeVar("F", bound="Fourier")
+
+
 @attr.s(auto_attribs=True)
 class Fourier(object):
 
     """"""
 
-    def fromnpy():
-        pass
+    data: np.ndarray
 
-    def fromfft():
-        pass
+    nsamp: int
+    tsamp: float
 
-    def fromspec():
-        pass
+    freq: np.ndarray
+    phas: np.ndarray
+    pows: np.ndarray
 
-    def tonpy():
-        pass
+    meta: typing.Optional[Metadata] = None
 
-    def tofft():
-        pass
+    @classmethod
+    def fromnpy(
+        cls: typing.Type[F],
+        d: np.ndarray,
+        nsamp: int,
+        tsamp: float,
+        meta: typing.Optional[Metadata] = None,
+    ) -> F:
 
-    def tospec():
-        pass
+        """"""
+
+        freq = np.fft.fftfreq(nsamp, tsamp)
+        phas = np.angle(d)
+        pows = np.abs(d) ** 2
+
+        return cls(
+            d,
+            nsamp=nsamp,
+            tsamp=tsamp,
+            freq=freq,
+            phas=phas,
+            pows=pows,
+            meta=meta,
+        )
+
+    @classmethod
+    def fromfft(
+        cls: typing.Type[F],
+        f: str,
+    ) -> F:
+
+        """"""
+
+        meta, data = fftread(f)
+        nsamp = meta["nsamp"]
+        tsamp = meta["tsamp"]
+        return cls.fromnpy(
+            data,
+            nsamp=nsamp,
+            tsamp=tsamp,
+            meta=meta,
+        )
+
+    @classmethod
+    def fromspec(
+        cls: typing.Type[F],
+        f: str,
+    ) -> F:
+
+        """"""
+
+        meta, data = specread(f)
+        nsamp = meta["nsamp"]
+        tsamp = meta["tsamp"]
+        return cls.fromnpy(
+            data,
+            nsamp=nsamp,
+            tsamp=tsamp,
+            meta=meta,
+        )
+
+    def tonpy(self) -> np.ndarray:
+
+        """"""
+
+        return self.data
+
+    def tofft(
+        self,
+        f: str,
+    ) -> None:
+
+        """"""
+
+        if self.meta:
+            fftwrite(
+                self.data,
+                self.meta,
+                f,
+            )
+
+    def tospec(
+        self,
+        f: str,
+    ) -> None:
+
+        """"""
+
+        if self.meta:
+            specwrite(
+                self.data,
+                self.meta,
+                f,
+            )
+        else:
+            raise NoMeta(
+                """
+                Metadata absent.
+                Cannot write to a *.tim file.
+                Exiting...
+                """
+            )
