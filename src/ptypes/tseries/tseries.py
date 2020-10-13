@@ -307,9 +307,10 @@ class TimeSeries(object):
         """"""
 
         meta, data = datread(f)
+        tsamp = meta["tsamp"]
         return cls(
             data,
-            tsamp=meta["tsamp"],
+            tsamp=tsamp,
             meta=meta,
         )
 
@@ -322,15 +323,22 @@ class TimeSeries(object):
         """"""
 
         meta, data = timread(f)
+        tsamp = meta["tsamp"]
         return cls(
             data,
-            tsamp=meta["tsamp"],
+            tsamp=tsamp,
             meta=meta,
         )
 
+    def tonpy(self) -> np.ndarray:
+
+        """"""
+
+        return self.data
+
     def todat(
         self,
-        f: typing.Optional[str] = None,
+        f: str,
     ) -> None:
 
         """"""
@@ -363,6 +371,3 @@ class TimeSeries(object):
                 Exiting...
                 """
             )
-
-    def tonpy(self) -> None:
-        pass
