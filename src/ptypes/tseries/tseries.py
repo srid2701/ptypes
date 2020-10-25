@@ -4,9 +4,13 @@ import typing
 import numpy as np  # type: ignore
 
 from pathlib import Path
-from ptypes.metadata import (
-    NoMeta,
-    Metadata,
+from ptypes.metadata import NoMeta, Metadata
+
+from pkernels import (
+    dsamp,
+    fold,
+    fastrmed,
+    generate,
 )
 
 from .formats import (
@@ -18,90 +22,6 @@ from .formats import (
 
 
 T = typing.TypeVar("T", bound="TimeSeries")
-
-
-def downsamp(
-    data: np.ndarray,
-    factor: typing.Union[int, float],
-) -> np.ndarray:
-
-    """"""
-
-    pass
-
-
-def tscrunch(
-    data: np.ndarray,
-    factor: typing.Union[int, float],
-) -> np.ndarray:
-
-    """"""
-
-    factor = int(factor)
-    if factor <= 1:
-        return data
-    N = (data.size // factor) * factor
-    return data[:N].reshape(-1, factor).mean(axis=1)
-
-
-def fastrmed(
-    data: np.ndarray,
-    widsamps: int,
-    minpts: int,
-) -> np.ndarray:
-
-    """"""
-
-    pass
-
-
-def generate(
-    nsamp: int,
-    period: float,
-    phi0: float = 0.5,
-    ducy: float = 0.02,
-    amp: float = 10.0,
-    stdnoise: float = 1.0,
-) -> np.ndarray:
-
-    """"""
-
-    kappa = np.log(2.0) / (2.0 * np.sin(np.pi * ducy / 2.0) ** 2)
-
-    phrads = (
-        np.arange(
-            nsamp,
-        )
-        / period
-        - phi0
-    ) * (2 * np.pi)
-    signal = np.exp(kappa * (np.cos(phrads) - 1.0))
-    scaler = amp * (signal ** 2).sum() ** -0.5
-    signal = scaler * signal
-
-    if stdnoise > 0.0:
-        noise = np.random.normal(
-            size=nsamp,
-            loc=0.0,
-            scale=stdnoise,
-        )
-    else:
-        noise = 0.0
-
-    tseries = signal + noise
-    return tseries
-
-
-def fold(
-    ts: T,
-    period: float,
-    bins: int,
-    subints: typing.Optional[int] = None,
-) -> np.ndarray:
-
-    """"""
-
-    pass
 
 
 @attr.s(auto_attribs=True)
@@ -180,11 +100,11 @@ class TimeSeries(object):
         """ """
 
         if inplace:
-            self.data = downsamp(self.data, factor)
+            self.data = dsamp(self.data, factor)
             self.tsamp = self.tsamp * factor
             return None
         else:
-            data = downsamp(self.data, factor)
+            data = dsamp(self.data, factor)
             tsamp = self.tsamp * factor
             return TimeSeries(
                 data,
