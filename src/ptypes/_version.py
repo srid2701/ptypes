@@ -41,7 +41,7 @@ def get_config():
     cfg = VersioneerConfig()
     cfg.VCS = "git"
     cfg.style = "pep440-pre"
-    cfg.tag_prefix = "'ptypes-'"
+    cfg.tag_prefix = "ptypes-"
     cfg.parentdir_prefix = "ptypes-"
     cfg.versionfile_source = "src/ptypes/_version.py"
     cfg.verbose = False
