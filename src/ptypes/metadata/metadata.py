@@ -7,8 +7,8 @@ from astropy import units as uu  # type: ignore
 from astropy.coordinates import SkyCoord  # type: ignore
 
 from .formats import (
-    # infread,
-    # infwrite,
+    infread,
+    infwrite,
     sigread,
     sigwrite,
 )
@@ -94,7 +94,7 @@ class Metadata(dict):
 
     def toinf(
         self,
-        f: typing.Optional[str],
+        f: str,
     ) -> None:
 
         """"""
