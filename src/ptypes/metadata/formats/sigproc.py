@@ -1,7 +1,7 @@
 import attr
-import typing
 import numpy as np  # type: ignore
 
+from typing import Any, List, Dict, Tuple
 from construct import (  # type: ignore
     this,
     Const,
@@ -154,7 +154,7 @@ def fltcrd(f: float) -> float:
     return sign * (hh + mm / 60.0 + ss / 3600.0)
 
 
-def sigread(f: str) -> typing.Dict[str, typing.Any]:
+def sigread(f: str) -> Dict[str, Any]:
 
     """"""
 
@@ -186,7 +186,7 @@ def sigread(f: str) -> typing.Dict[str, typing.Any]:
 
 
 def sigwrite(
-    d: typing.Dict[str, typing.Any],
+    d: Dict[str, Any],
     f: str,
 ) -> None:
 

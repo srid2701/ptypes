@@ -1,4 +1,5 @@
 from .inf import infread, infwrite
+from .guppi import mgupread, mgupwrite
 from .sigproc import sigread, sigwrite
 
 __all__ = [
@@ -6,4 +7,6 @@ __all__ = [
     "infwrite",
     "sigread",
     "sigwrite",
+    "mgupread",
+    "mgupwrite",
 ]

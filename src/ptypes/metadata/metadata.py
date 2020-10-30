@@ -2,20 +2,13 @@ import attr
 import pprint
 import typing
 
-from schema import (  # type: ignore
-    Or,
-    And,
-    Schema,
-    Optional,
-)
-
 from pathlib import Path
 from astropy import units as uu  # type: ignore
 from astropy.coordinates import SkyCoord  # type: ignore
 
 from .formats import (
-    infread,
-    infwrite,
+    # infread,
+    # infwrite,
     sigread,
     sigwrite,
 )
