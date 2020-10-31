@@ -105,6 +105,7 @@ def infwrite(
 
     """"""
 
+    fname = d.pop("fname")
     notes = d.pop("notes")
     onoffs = d.pop("onoffs")
 

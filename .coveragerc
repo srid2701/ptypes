@@ -1,0 +1,5 @@
+[run]
+include =
+    src/ptypes/*
+omit =
+    src/ptypes/_version.py

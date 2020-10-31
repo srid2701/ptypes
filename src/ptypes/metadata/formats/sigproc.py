@@ -193,15 +193,11 @@ def sigwrite(
     """"""
 
     with open(f, "wb+") as fobj:
-
         sflag.build_stream(None, fobj)
-
         for key, val in d.items():
             if key in sigkeys.keys():
                 con = Container()
                 con["key"] = key
                 con["value"] = val
-                print(con)
                 keystruct.build_stream(con, fobj)
-
         eflag.build_stream(None, fobj)

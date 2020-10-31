@@ -13,7 +13,7 @@ def datread(f: str) -> typing.Tuple[Metadata, np.ndarray]:
 
     if not inf.exists():
         msg = "No corresponding *.inf file found. Exiting..."
-        raise OSError(msg)
+        raise FileNotFoundError(msg)
 
     meta = Metadata.frominf(str(inf))
 
