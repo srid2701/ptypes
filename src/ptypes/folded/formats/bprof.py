@@ -1,15 +1,11 @@
 import re
-import typing
 import numpy as np  # type: ignore
 
-from schema import (  # type: ignore
-    Or,
-    Use,
-    Schema,
-)
+from typing import Any, List, Dict, Tuple
+from schema import Or, Use, Schema  # type: ignore
 
 
-def strex(val: typing.Any) -> typing.Any:
+def strex(val: Any) -> Any:
     val = str(val)
     if val == "N/A":
         return None
@@ -17,7 +13,7 @@ def strex(val: typing.Any) -> typing.Any:
         return val
 
 
-def numex(str: str) -> typing.Any:
+def numex(str: str) -> Any:
     numex = re.compile(
         """
         [+-]                # Match a `+` or a `-`.
@@ -117,7 +113,7 @@ bproftemplate = (
 errtemplate = "{value:16} +/- {error}"
 
 
-def mclean(m: typing.Dict) -> typing.Dict:
+def mclean(m: Dict) -> Dict:
 
     """"""
 
@@ -134,7 +130,7 @@ def mclean(m: typing.Dict) -> typing.Dict:
     return d
 
 
-def mdirty(m: typing.Dict) -> typing.Dict:
+def mdirty(m: Dict) -> Dict:
 
     """"""
 
@@ -160,11 +156,11 @@ def mdirty(m: typing.Dict) -> typing.Dict:
     return d
 
 
-def bprofread(f: str) -> typing.Tuple:
+def bprofread(f: str) -> Tuple:
 
     """"""
 
-    m: typing.Dict[str, typing.Any] = {}
+    m: Dict[str, Any] = {}
 
     metex = re.compile(r"^#.*", re.M)
     sepex = re.compile(r"\s+[=<>]\s+")
@@ -192,7 +188,7 @@ def bprofread(f: str) -> typing.Tuple:
 
 
 def bprofwrite(
-    m: typing.Dict,
+    m: Dict,
     d: np.ndarray,
     f: str,
 ) -> None:

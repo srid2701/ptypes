@@ -1,7 +1,7 @@
-import typing
 import numpy as np  # type: ignore
 
 from pathlib import Path
+from typing import Any, List, Dict, Tuple
 
 from construct import (  # type: ignore
     this,
@@ -80,7 +80,7 @@ pfdstruct = Struct(
 )
 
 
-def pfdread(f: str) -> typing.Dict:
+def pfdread(f: str) -> Dict:
 
     if Path(f).exists():
         d = pfdstruct.parse_file(f)
@@ -104,7 +104,7 @@ def pfdread(f: str) -> typing.Dict:
 
 
 def pfdwrite(
-    d: typing.Dict,
+    d: Dict,
     f: str,
 ) -> None:
 

@@ -5,16 +5,21 @@ import typing
 from pathlib import Path
 from astropy import units as uu  # type: ignore
 from astropy.coordinates import SkyCoord  # type: ignore
+from typing import Any, Type, List, Dict, Tuple, TypeVar, Optional
 
 from .formats import (
     infread,
     infwrite,
     sigread,
     sigwrite,
+    gupread,
+    gupwrite,
+    fitsread,
+    fitswrite,
 )
 
 
-M = typing.TypeVar("M", bound="Metadata")
+M = TypeVar("M", bound="Metadata")
 
 
 class NoMeta(Exception):
@@ -28,7 +33,7 @@ class Metadata(dict):
 
     """"""
 
-    def __init__(self, items: typing.Dict = {}):
+    def __init__(self, items: Dict = {}):
         super(Metadata, self).__init__(items)
 
         for key, val in self.items():
@@ -57,7 +62,7 @@ class Metadata(dict):
 
     @classmethod
     def frominf(
-        cls: typing.Type[M],
+        cls: Type[M],
         f: str,
     ) -> M:
 
@@ -69,7 +74,7 @@ class Metadata(dict):
 
     @classmethod
     def fromhdr(
-        cls: typing.Type[M],
+        cls: Type[M],
         f: str,
     ) -> M:
 
@@ -80,11 +85,35 @@ class Metadata(dict):
         return cls.fromdict(d)
 
     @classmethod
+    def fromfits(
+        cls: Type[M],
+        f: str,
+    ) -> M:
+
+        """"""
+
+        d = fitsread(f)
+        d["fname"] = f
+        return cls.fromdict(d)
+
+    @classmethod
+    def fromgup(
+        cls: Type[M],
+        f: str,
+    ) -> M:
+
+        """"""
+
+        d = gupread(f)
+        d["fname"] = f
+        return cls.fromdict(d)
+
+    @classmethod
     def fromdict(
-        cls: typing.Type[M],
-        d: typing.Dict[
+        cls: Type[M],
+        d: Dict[
             str,
-            typing.Any,
+            Any,
         ],
     ) -> M:
 
@@ -112,7 +141,27 @@ class Metadata(dict):
         attrs = self.todict()
         sigwrite(attrs, f)
 
-    def todict(self) -> typing.Dict[str, typing.Any]:
+    def tofits(
+        self,
+        f: str,
+    ) -> None:
+
+        """"""
+
+        attrs = self.todict()
+        fitswrite(attrs, f)
+
+    def togup(
+        self,
+        f: str,
+    ) -> None:
+
+        """"""
+
+        attrs = self.todict()
+        gupwrite(attrs, f)
+
+    def todict(self) -> Dict[str, Any]:
 
         """"""
 

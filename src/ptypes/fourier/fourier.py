@@ -1,22 +1,13 @@
 import attr
-import typing
 import numpy as np  # type: ignore
 
 from pathlib import Path
-from ptypes.metadata import (
-    NoMeta,
-    Metadata,
-)
-
-from .formats import (
-    fftread,
-    fftwrite,
-    specread,
-    specwrite,
-)
+from ptypes.metadata import NoMeta, Metadata
+from .formats import fftread, fftwrite, specread, specwrite
+from typing import Any, Type, List, Dict, Tuple, TypeVar, Optional
 
 
-F = typing.TypeVar("F", bound="Fourier")
+F = TypeVar("F", bound="Fourier")
 
 
 @attr.s(auto_attribs=True)
@@ -33,15 +24,15 @@ class Fourier(object):
     phas: np.ndarray
     pows: np.ndarray
 
-    meta: typing.Optional[Metadata] = None
+    meta: Optional[Metadata] = None
 
     @classmethod
     def fromnpy(
-        cls: typing.Type[F],
+        cls: Type[F],
         d: np.ndarray,
         nsamp: int,
         tsamp: float,
-        meta: typing.Optional[Metadata] = None,
+        meta: Optional[Metadata] = None,
     ) -> F:
 
         """"""
@@ -62,7 +53,7 @@ class Fourier(object):
 
     @classmethod
     def fromfft(
-        cls: typing.Type[F],
+        cls: Type[F],
         f: str,
     ) -> F:
 
@@ -80,7 +71,7 @@ class Fourier(object):
 
     @classmethod
     def fromspec(
-        cls: typing.Type[F],
+        cls: Type[F],
         f: str,
     ) -> F:
 

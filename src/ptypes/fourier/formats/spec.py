@@ -1,7 +1,7 @@
-import typing
 import numpy as np  # type: ignore
 
 from pathlib import Path
+from typing import Tuple
 from ptypes.metadata import Metadata
 
 
@@ -15,7 +15,7 @@ bits2dtypes = {
 }
 
 
-def specread(f: str) -> typing.Tuple[Metadata, np.ndarray]:
+def specread(f: str) -> Tuple[Metadata, np.ndarray]:
 
     """"""
 

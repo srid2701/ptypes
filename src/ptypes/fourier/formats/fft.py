@@ -1,11 +1,11 @@
-import typing
 import numpy as np  # type: ignore
 
 from pathlib import Path
+from typing import Tuple, Optional
 from ptypes.metadata import Metadata
 
 
-def fftread(f: str) -> typing.Tuple[Metadata, np.ndarray]:
+def fftread(f: str) -> Tuple[Metadata, np.ndarray]:
 
     """"""
 
@@ -29,7 +29,7 @@ def fftread(f: str) -> typing.Tuple[Metadata, np.ndarray]:
 def fftwrite(
     data: np.ndarray,
     meta: Metadata,
-    f: typing.Optional[str] = None,
+    f: Optional[str] = None,
 ) -> None:
 
     """"""

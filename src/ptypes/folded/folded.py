@@ -1,22 +1,14 @@
 import attr
-import typing
 import numpy as np  # type: ignore
 
 from ptypes.metadata import NoMeta, Metadata
-
-from .formats import (
-    arread,
-    arwrite,
-    pfdread,
-    pfdwrite,
-    bprofread,
-    bprofwrite,
-)
+from typing import Any, Type, Dict, TypeVar, Optional
+from .formats import arread, arwrite, pfdread, pfdwrite, bprofread, bprofwrite
 
 
-P = typing.TypeVar("P", bound="Profile")
-S = typing.TypeVar("S", bound="Slice")
-F = typing.TypeVar("F", bound="Folded")
+P = TypeVar("P", bound="Profile")
+S = TypeVar("S", bound="Slice")
+F = TypeVar("F", bound="Folded")
 
 
 @attr.s(auto_attribs=True)
@@ -32,11 +24,11 @@ class Profile(object):
 
     bsline: np.ndarray
 
-    meta: typing.Optional[Metadata] = None
+    meta: Optional[Metadata] = None
 
     @classmethod
     def _wid(
-        cls: typing.Type[P],
+        cls: Type[P],
         data: np.ndarray,
     ) -> int:
 
@@ -67,7 +59,7 @@ class Profile(object):
 
     @classmethod
     def _pos(
-        cls: typing.Type[P],
+        cls: Type[P],
         wid: int,
         data: np.ndarray,
     ) -> int:
@@ -84,7 +76,7 @@ class Profile(object):
 
     @classmethod
     def _bsline(
-        cls: typing.Type[P],
+        cls: Type[P],
         wid: int,
         pos: int,
         data: np.ndarray,
@@ -122,9 +114,9 @@ class Profile(object):
 
     @classmethod
     def fromnp(
-        cls: typing.Type[P],
+        cls: Type[P],
         data: np.ndarray,
-        meta: typing.Optional[Metadata] = None,
+        meta: Optional[Metadata] = None,
     ) -> P:
 
         """"""
@@ -146,7 +138,7 @@ class Profile(object):
 
     @classmethod
     def frombprof(
-        cls: typing.Type[P],
+        cls: Type[P],
         f: str,
     ) -> P:
 
@@ -169,7 +161,7 @@ class Slice(object):
 
     @classmethod
     def fromnp(
-        cls: typing.Type[S],
+        cls: Type[S],
         data: np.ndarray,
     ) -> S:
 
@@ -210,7 +202,7 @@ class Folded(object):
     nsub: int
     nbin: int
 
-    meta: typing.Optional[Metadata] = None
+    meta: Optional[Metadata] = None
 
     def subint(self, nint: int) -> Slice:
 
@@ -244,9 +236,9 @@ class Folded(object):
 
     @classmethod
     def fromnp(
-        cls: typing.Type[F],
+        cls: Type[F],
         data: np.ndarray,
-        meta: typing.Optional[Metadata] = None,
+        meta: Optional[Metadata] = None,
     ) -> F:
 
         """"""
@@ -266,7 +258,7 @@ class Folded(object):
 
     @classmethod
     def fromar(
-        cls: typing.Type[F],
+        cls: Type[F],
         f: str,
     ) -> F:
 
@@ -276,7 +268,7 @@ class Folded(object):
 
     @classmethod
     def frompfd(
-        cls: typing.Type[F],
+        cls: Type[F],
         f: str,
     ) -> F:
 
@@ -296,9 +288,9 @@ class Folded(object):
         """"""
 
         if self.meta:
-            d: typing.Dict[
+            d: Dict[
                 str,
-                typing.Any,
+                Any,
             ] = {}
             d.update(self.meta.todict())
             d["profs"] = self.data

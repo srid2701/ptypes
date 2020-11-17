@@ -1,27 +1,15 @@
 import attr
 import copy
-import typing
 import numpy as np  # type: ignore
 
 from pathlib import Path
 from ptypes.metadata import NoMeta, Metadata
-
-from pkernels import (
-    dsamp,
-    fold,
-    fastrmed,
-    generate,
-)
-
-from .formats import (
-    datread,
-    datwrite,
-    timread,
-    timwrite,
-)
+from .formats import datread, datwrite, timread, timwrite
+from typing import Any, Type, List, Dict, Tuple, TypeVar, Optional
+from pkernels import dsamp, fold, fastrmed, generate  # type: ignore
 
 
-T = typing.TypeVar("T", bound="TimeSeries")
+T = TypeVar("T", bound="TimeSeries")
 
 
 @attr.s(auto_attribs=True)
@@ -30,11 +18,8 @@ class TimeSeries(object):
     """"""
 
     data: np.ndarray
-
     tsamp: float
-
-    meta: typing.Optional[Metadata] = None
-
+    meta: Optional[Metadata] = None
     _copy: bool = False
 
     def copy(self: T) -> T:
@@ -46,7 +31,7 @@ class TimeSeries(object):
     def normalise(
         self: T,
         inplace: bool = False,
-    ) -> typing.Any:
+    ) -> Any:
 
         """"""
 
@@ -70,7 +55,7 @@ class TimeSeries(object):
         width: float,
         minpts: int = 10,
         inplace: bool = False,
-    ) -> typing.Any:
+    ) -> Any:
 
         """ """
 
@@ -95,7 +80,7 @@ class TimeSeries(object):
         self: T,
         factor: float,
         inplace: bool = False,
-    ) -> typing.Any:
+    ) -> Any:
 
         """ """
 
@@ -116,21 +101,29 @@ class TimeSeries(object):
         self,
         period: float,
         bins: int,
-        subints: typing.Optional[int] = None,
+        subints: Optional[int] = None,
     ) -> np.ndarray:
 
         """ """
 
-        return fold(
-            self,
-            period,
-            bins,
-            subints=subints,
-        )
+        if self.meta:
+            nsamp = self.meta["nsamp"]
+            tsamp = self.meta["tsamp"]
+
+            return fold(
+                self,
+                period,
+                nsamp,
+                tsamp,
+                bins,
+                subints=subints,
+            )
+        else:
+            raise NoMeta("Metadata missing! Cannot fold.")
 
     @classmethod
     def generate(
-        cls: typing.Type[T],
+        cls: Type[T],
         length: float,
         tsamp: float,
         period: float,
@@ -171,7 +164,7 @@ class TimeSeries(object):
 
     @classmethod
     def fromnpy(
-        cls: typing.Type[T],
+        cls: Type[T],
         array: np.ndarray,
         tsamp: float,
         copy: bool = False,
@@ -187,7 +180,7 @@ class TimeSeries(object):
 
     @classmethod
     def frombin(
-        cls: typing.Type[T],
+        cls: Type[T],
         fname: str,
         dtype: np.dtype,
         tsamp: float,
@@ -204,7 +197,7 @@ class TimeSeries(object):
 
     @classmethod
     def fromnpyfile(
-        cls: typing.Type[T],
+        cls: Type[T],
         fname: str,
         tsamp: float,
     ) -> T:
@@ -220,7 +213,7 @@ class TimeSeries(object):
 
     @classmethod
     def fromdat(
-        cls: typing.Type[T],
+        cls: Type[T],
         f: str,
     ) -> T:
 
@@ -236,7 +229,7 @@ class TimeSeries(object):
 
     @classmethod
     def fromtim(
-        cls: typing.Type[T],
+        cls: Type[T],
         f: str,
     ) -> T:
 
