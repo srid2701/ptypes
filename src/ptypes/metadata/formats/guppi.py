@@ -16,7 +16,7 @@ typemap = {
 }
 
 
-def mgupread(
+def gupread(
     f: typing.Any,
 ) -> typing.Dict[str, typing.Any,]:
 
@@ -44,7 +44,7 @@ def mgupread(
     return d
 
 
-def mgupwrite(
+def gupwrite(
     d: typing.Dict[str, typing.Any],
     f: typing.Any,
 ) -> None:
