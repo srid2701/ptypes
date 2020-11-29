@@ -15,11 +15,10 @@
  Type of observation (EM band)          =  Radio
  Beam diameter (arcsec)                 =  981
  Dispersion measure (cm-3 pc)           =  42.42
- Central freq of low channel (Mhz)      =  1182.1953125
- Total bandwidth (Mhz)                  =  400
+ Central freq of low channel (MHz)      =  1182.1953125
+ Total bandwidth (MHz)                  =  400
  Number of channels                     =  1024
- Channel bandwidth (Mhz)                =  0.390625
+ Channel bandwidth (MHz)                =  0.390625
  Data analyzed by                       =  Space Sheriff Gavan
  Any additional notes:
     Input filterbank samples have 2 bits.
-
