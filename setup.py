@@ -8,10 +8,9 @@ here = pathlib.Path(__file__).parent.resolve()
 long_description = (here / "README.md").read_text(encoding="utf-8")
 
 install_requires = [
-    "numpy",
-    "construct",
-    "pytest",
     "astropy",
+    "pytest",
+    "construct",
     "pytest-cov",
     "pkernels@git+https://github.com/astrogewgaw/pkernels.git",
 ]
