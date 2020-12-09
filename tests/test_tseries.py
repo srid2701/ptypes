@@ -111,30 +111,42 @@ class TestTim(object):
                 assert np.allclose(test.data, self.refdata)
 
 
-def test_npybin() -> None:
+class TestMisc(object):
 
     """"""
 
     tsamp = 64e-6
     refdata = np.arange(16, dtype=np.float32)
 
-    def check_data(t: TimeSeries) -> None:
+    def check_data(self, t: TimeSeries) -> None:
 
         """"""
 
-        assert t.tsamp == tsamp
+        assert t.tsamp == self.tsamp
         assert t.data.dtype == np.float32
-        assert np.allclose(t.data, refdata)
+        assert np.allclose(t.data, self.refdata)
 
-    t = TimeSeries.fromnpy(refdata, tsamp)
-    check_data(t)
+    def test_npy(self) -> None:
 
-    with tempfile.NamedTemporaryFile(suffix=".npy") as f:
-        np.save(f.name, refdata)
-        t = TimeSeries.fromnpyfile(f.name, tsamp)
-        check_data(t)
+        """"""
 
-    with tempfile.NamedTemporaryFile(suffix=".bin") as f:
-        refdata.astype(np.float32).tofile(f.name)
-        t = TimeSeries.frombin(f.name, np.float32, tsamp)
-        check_data(t)
+        t = TimeSeries.fromnpy(self.refdata, self.tsamp)
+        self.check_data(t)
+
+    def test_npyfile(self) -> None:
+
+        """"""
+
+        with tempfile.NamedTemporaryFile(suffix=".npy") as f:
+            np.save(f.name, self.refdata)
+            t = TimeSeries.fromnpyfile(f.name, self.tsamp)
+            self.check_data(t)
+
+    def test_bin(self) -> None:
+
+        """"""
+
+        with tempfile.NamedTemporaryFile(suffix=".bin") as f:
+            self.refdata.astype(np.float32).tofile(f.name)
+            t = TimeSeries.frombin(f.name, np.float32, self.tsamp)
+            self.check_data(t)
