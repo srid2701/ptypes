@@ -7,7 +7,13 @@ here = pathlib.Path(__file__).parent.resolve()
 
 long_description = (here / "README.md").read_text(encoding="utf-8")
 
-install_requires = ["numpy", "scipy", "construct", "pytest", "astropy", "pytest-cov"]
+install_requires = [
+    "astropy",
+    "pytest",
+    "construct",
+    "pytest-cov",
+    "pkernels@git+https://github.com/astrogewgaw/pkernels.git",
+]
 
 setup(
     name="pulsartypes",
@@ -24,7 +30,11 @@ setup(
         "Programming Language :: Python :: 3.8",
         "Topic :: Scientific/Engineering :: Astronomy",
     ],
-    keywords=("pulsars, " "data types, " "readers"),
+    keywords=(
+        "pulsars",
+        "astronomy",
+        "data processing",
+    ),
     package_dir={"": "src"},
     packages=find_packages(where="src"),
     install_package_data=True,
