@@ -5,7 +5,7 @@ import typing
 from pathlib import Path
 from astropy import units as uu  # type: ignore
 from astropy.coordinates import SkyCoord  # type: ignore
-from typing import Any, Type, List, Dict, Tuple, TypeVar, Optional
+from typing import Any, Type, List, Dict, Tuple, TypeVar, Optional, Callable
 
 from .formats import (
     infread,
@@ -166,3 +166,28 @@ class Metadata(dict):
         """"""
 
         return dict(self)
+
+    def requires(
+        self,
+        params: List[str],
+    ) -> Callable:
+
+        """"""
+
+        def inner(f: Callable) -> Callable:
+            def wrapper(
+                *args: List,
+                **kwargs: Dict,
+            ) -> Callable:
+
+                for param in params:
+                    p = self.get(param, None)
+                    if p is not None:
+                        continue
+                    else:
+                        raise NoMeta("Metadata missing. Exiting...")
+                return f(*args, **kwargs)
+
+            return wrapper
+
+        return inner

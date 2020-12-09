@@ -19,7 +19,7 @@ class TimeSeries(object):
 
     data: np.ndarray
     tsamp: float
-    meta: Optional[Metadata] = None
+    meta: Metadata = Metadata({})
     _copy: bool = False
 
     def copy(self: T) -> T:
@@ -97,6 +97,7 @@ class TimeSeries(object):
                 meta=self.meta,
             )
 
+    @meta.requires(["nsamp", "tsamp"])
     def fold(
         self,
         period: float,
@@ -106,20 +107,17 @@ class TimeSeries(object):
 
         """ """
 
-        if self.meta:
-            nsamp = self.meta["nsamp"]
-            tsamp = self.meta["tsamp"]
+        nsamp = self.meta["nsamp"]
+        tsamp = self.meta["tsamp"]
 
-            return fold(
-                self,
-                period,
-                nsamp,
-                tsamp,
-                bins,
-                subints=subints,
-            )
-        else:
-            raise NoMeta("Metadata missing! Cannot fold.")
+        return fold(
+            self,
+            period,
+            nsamp,
+            tsamp,
+            bins,
+            subints=subints,
+        )
 
     @classmethod
     def generate(
